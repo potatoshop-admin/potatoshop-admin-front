@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { TabItem } from '@/app/(afterSignIn)/components/tabs/tab-layout';
+import { TabItem } from '@/app/(afterLogin)/components/tabs/tab-layout';
 import {
   Select,
   SelectContent,

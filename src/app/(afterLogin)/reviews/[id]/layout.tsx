@@ -8,17 +8,6 @@ export const metadata: Metadata = {
     '의류, 패션, 옷, 상품 관리, 상품 등록, 제품 상세, 재고 관리, 쇼핑몰 관리자, Admin 시스템, Potato Admin',
 };
 
-export default function UserLayout({
-  children,
-  modal,
-}: {
-  children: React.ReactNode;
-  modal: React.ReactNode;
-}) {
-  return (
-    <>
-      {children}
-      {modal}
-    </>
-  );
+export default function UserLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }

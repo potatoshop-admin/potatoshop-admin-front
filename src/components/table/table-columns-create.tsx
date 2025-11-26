@@ -1,8 +1,8 @@
 import React from 'react';
 import { CellContext, ColumnDef, HeaderContext } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
-import { ColumnConfig } from '@/app/(afterSignIn)/components/tables/total-data-table';
 import { FilterableHeader, SortableHeader } from '@/components/table/column-factory';
+import { ColumnConfig } from '@/app/(afterLogin)/users/components/usersChart';
 
 const TableCellComponent = React.memo(
   ({ value, onClick }: { value: string; onClick?: () => void }) => {
