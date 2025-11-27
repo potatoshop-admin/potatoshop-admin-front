@@ -20,6 +20,7 @@ import { ColumnConfig } from '@/app/(afterLogin)/users/components/usersChart';
 import { useGetAllReview } from '@/api/review';
 import { Review } from '@/types/review';
 import ChartTemplate from '@/app/(afterLogin)/components/charts/chartTemplate';
+import Loading from '@/components/ui/loading';
 
 export type CustomerReview = {
   storeId: number;
@@ -119,7 +120,7 @@ const ReviewChart = () => {
   });
 
   if (!isSuccess) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
   return (
     <div className="w-full h-full p-4">

@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { RowDisplay } from '@/app/(afterLogin)/components/subtabs/row-form';
 import { useDeleteReview, useGetReview } from '@/api/review';
+import Loading from '@/components/ui/loading';
 
 const ReviewDetail = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -36,7 +37,9 @@ const ReviewDetail = ({ id }: { id: string }) => {
     }
   }, [data?.data]);
 
-  if (!isSuccess) return <p>Loading.....</p>;
+  if (!isSuccess) {
+    return <Loading />;
+  }
   return (
     <div className="h-full w-full px-4 py-4 overflow-y-scroll">
       <Dialog>

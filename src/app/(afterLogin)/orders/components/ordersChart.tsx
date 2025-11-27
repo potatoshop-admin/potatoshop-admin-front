@@ -21,6 +21,7 @@ import { ColumnConfig } from '@/app/(afterLogin)/products/components/itemsChart'
 import { URL } from '@/constants';
 import { Grade } from '@/types/user';
 import { Order, OrderStatus } from '@/types/order';
+import Loading from '@/components/ui/loading';
 
 interface OrderChartProps {
   orderStatus?: OrderStatus;
@@ -141,10 +142,10 @@ const OrdersChart = ({ orderStatus, title }: OrderChartProps) => {
   });
 
   if (!isSuccess) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
   return (
-    <div className="w-full h-full p-4">
+    <div>
       <ChartTemplate title={title} table={table} columnsData={columnsData} />
     </div>
   );

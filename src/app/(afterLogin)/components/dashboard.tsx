@@ -14,6 +14,7 @@ import DashboardCard from '@/app/(afterLogin)/components/dashboard-card';
 import AllStageChart from '@/app/(afterLogin)/components/charts/all-stage-chart';
 import OrdersChart from '@/app/(afterLogin)/orders/components/ordersChart';
 import { useGetDashboard } from '@/api/dashboard';
+import Loading from '@/components/ui/loading';
 
 interface UserStatus {
   date: string;
@@ -44,7 +45,7 @@ const Dashboard = () => {
   } satisfies ChartConfig;
 
   if (!isSuccess) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
   return (
     <div className="w-full h-full px-4 py-4 flex flex-col space-y-4">

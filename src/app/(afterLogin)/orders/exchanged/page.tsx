@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const Exchanged = () => {
   return (
-    <div>
+    <div className="w-full h-full p-4">
       <OrdersChart title="교환 완료" orderStatus="EXCHANGED" />
     </div>
   );

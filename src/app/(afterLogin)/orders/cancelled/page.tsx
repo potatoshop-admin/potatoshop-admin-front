@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const Cancelled = () => {
   return (
-    <div>
+    <div className="w-full h-full p-4">
       <OrdersChart title="취소 완료" orderStatus="CANCELLED" />
     </div>
   );

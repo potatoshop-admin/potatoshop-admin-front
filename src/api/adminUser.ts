@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Cookies from 'js-cookie';
 import apiInstance from '@/api/apiInstance';
 import { ApiResponseType, AxiosErrorResponse } from '@/types/api';
 import { AdminUser, RoleType } from '@/types/adminUser';
-import Cookies from 'js-cookie';
 
 export const useGetAdminUsers = () => {
   return useQuery({
@@ -74,7 +74,8 @@ export const useLogin = (options: {
         // 쿠키에 저장
         Cookies.set('token', token);
       }
-      return { ...data, token }; // ← 토큰만 넘겨줌
+
+      return { ...data, token };
     },
     ...options,
     onSuccess: (data) => {

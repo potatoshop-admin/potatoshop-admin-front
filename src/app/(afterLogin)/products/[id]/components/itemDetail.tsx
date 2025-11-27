@@ -9,6 +9,7 @@ import { RowDisplay } from '@/app/(afterLogin)/components/subtabs/row-form';
 import { Button } from '@/components/ui/button';
 import { Images, Item } from '@/types/item';
 import { URL } from '@/constants';
+import Loading from '@/components/ui/loading';
 
 const ItemDetail = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -38,7 +39,9 @@ const ItemDetail = ({ id }: { id: string }) => {
     }
   }, [isSuccess]);
 
-  if (!isSuccess) return <p>Loading.....</p>;
+  if (!isSuccess) {
+    return <Loading />;
+  }
   return (
     <div className="h-full w-full px-4 py-4 overflow-y-scroll">
       <div className="w-full h-fit pb-6">

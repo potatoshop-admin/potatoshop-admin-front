@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 const CancelRequested = () => {
   return (
-    <div>
+    <div className="w-full h-full p-4">
       <OrdersChart title="취소 요청" orderStatus="CANCEL_REQUESTED" />
     </div>
   );
