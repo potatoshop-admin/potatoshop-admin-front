@@ -20,6 +20,7 @@ import { useGetAllCs } from '@/api/cs';
 import { Cs, CsStatus } from '@/types/cs';
 import { ColumnConfig } from '@/app/(afterLogin)/users/components/usersChart';
 import ChartTemplate from '@/app/(afterLogin)/components/charts/chartTemplate';
+import Loading from '@/components/ui/loading';
 
 export type CustomerCs = {
   csId: number;
@@ -109,7 +110,7 @@ const CsChart = () => {
   });
 
   if (!isSuccess) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
   return (
     <div className="w-full h-full p-4">

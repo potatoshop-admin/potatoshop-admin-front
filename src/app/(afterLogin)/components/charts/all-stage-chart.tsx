@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Area, AreaChart, CartesianGrid, Pie, PieChart, XAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Pie, PieChart, XAxis } from 'recharts';
 import { Button } from '@/components/ui/button';
 import {
   ChartConfig,
@@ -162,22 +162,14 @@ const AllStageChart = ({
         </ChartContainer>
       ) : (
         <ChartContainer config={bChartConfig} className="aspect-auto h-[250px] w-full">
-          <AreaChart data={formattedMonthlyData}>
-            <defs>
-              {bChart.map((data) => (
-                <linearGradient key={data.id} id={data.id} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={data.color} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={data.color} stopOpacity={0.1} />
-                </linearGradient>
-              ))}
-            </defs>
+          <BarChart accessibilityLayer data={formattedMonthlyData}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              minTickGap={32}
+              minTickGap={2}
               tickFormatter={(value) => {
                 const date = new Date(value);
                 return date.toLocaleDateString('ko-Ko', {
@@ -201,11 +193,10 @@ const AllStageChart = ({
               }
             />
             {bChart.map((data) => (
-              <Area
+              <Bar
                 key={data.id}
                 dataKey={data.id}
-                type="natural"
-                fill={`url(#${data.id})`}
+                fill={data.color}
                 stroke={data.color}
                 stackId={data.stackId}
               />
@@ -214,7 +205,7 @@ const AllStageChart = ({
               content={<ChartLegendContent />}
               className="h-10 overflow-x-scroll whitespace-nowrap"
             />
-          </AreaChart>
+          </BarChart>
         </ChartContainer>
       )}
     </div>

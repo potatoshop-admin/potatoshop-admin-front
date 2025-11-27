@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Order, OrderItem } from '@/types/order';
+import Loading from '@/components/ui/loading';
 
 const OrderDetail = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -68,7 +69,9 @@ const OrderDetail = ({ id }: { id: string }) => {
     return () => setOrderInfo(initialOrder);
   }, []);
 
-  if (!isSuccess) return <p>Loading.....</p>;
+  if (!isSuccess) {
+    return <Loading />;
+  }
   return (
     <div className="h-full w-full px-4 py-4 overflow-y-scroll">
       <Dialog>

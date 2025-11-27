@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useGetAllItems } from '@/api/items';
 import { Button } from '@/components/ui/button';
+import Loading from '@/components/ui/loading';
 import { URL } from '@/constants';
 import { Item } from '@/types/item';
 
@@ -15,13 +16,10 @@ const Edit = () => {
   const btnEditItem = (id: number) => {
     router.push(`${URL.PRODUCTS_MANAGEMENT_EDIT}/${id}`);
   };
-  if (!isSuccess)
-    return (
-      <div>
-        <h1>PRODUCTS_MANAGEMENT_EDIT</h1>
-        <p>loading...</p>
-      </div>
-    );
+
+  if (!isSuccess) {
+    return <Loading />;
+  }
   return (
     <div className="p-4">
       <h1 className="font-24-extrabold sm:text-[28px]">PRODUCTS_MANAGEMENT_EDIT</h1>

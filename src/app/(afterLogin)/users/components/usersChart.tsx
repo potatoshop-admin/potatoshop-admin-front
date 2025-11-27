@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import Loading from '@/components/ui/loading';
 
 type ColumnOption = 'sorted' | 'filtered' | 'default';
 
@@ -149,7 +150,7 @@ const UsersChart = () => {
   });
 
   if (!isSuccess) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
   return (
     <div className="w-full h-full p-4">

@@ -19,6 +19,7 @@ import { TableColumnsCreate } from '@/components/table';
 import React, { useMemo, useState } from 'react';
 import { URL } from '@/constants';
 import ChartTemplate from '@/app/(afterLogin)/components/charts/chartTemplate';
+import Loading from '@/components/ui/loading';
 
 type ColumnOption = 'sorted' | 'filtered' | 'default';
 
@@ -167,7 +168,7 @@ const ItemsChart = ({ chartTitle, season }: { chartTitle: string; season?: Seaso
   });
 
   if (!isSuccess) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
   return (
     <div className="w-full h-full p-4">

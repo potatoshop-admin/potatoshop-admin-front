@@ -21,6 +21,7 @@ import { useGetAdminUsers, usePatchManager } from '@/api/adminUser';
 import { AdminUser, RoleType } from '@/types/adminUser';
 import { toast } from 'sonner';
 import ChartTemplate from '@/app/(afterLogin)/components/charts/chartTemplate';
+import Loading from '@/components/ui/loading';
 
 export type CustomAdminUser = {
   adminUserId: number;
@@ -132,7 +133,7 @@ const AdminUserChart = () => {
   });
 
   if (!isSuccess) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
   return (
     <div>

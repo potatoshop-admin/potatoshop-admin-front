@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 const ExchangeRequested = () => {
   return (
-    <div>
+    <div className="w-full h-full p-4">
       <OrdersChart title="교환 요청" orderStatus="EXCHANGE_REQUESTED" />
     </div>
   );

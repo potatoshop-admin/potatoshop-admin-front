@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const Processing = () => {
   return (
-    <div>
+    <div className="w-full h-full p-4">
       <OrdersChart title="상품준비중" orderStatus="PROCESSING" />
     </div>
   );

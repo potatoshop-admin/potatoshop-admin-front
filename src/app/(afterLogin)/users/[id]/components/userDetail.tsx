@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { User } from '@/types/user';
+import Loading from '@/components/ui/loading';
 
 const UserDetail = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -57,7 +58,9 @@ const UserDetail = ({ id }: { id: string }) => {
     return () => setUserInfo(initialUser);
   }, []);
 
-  if (!isSuccess) return <p>Loading.....</p>;
+  if (!isSuccess) {
+    return <Loading />;
+  }
   return (
     <div className="h-full w-full px-4 py-4 overflow-y-scroll">
       <Dialog>

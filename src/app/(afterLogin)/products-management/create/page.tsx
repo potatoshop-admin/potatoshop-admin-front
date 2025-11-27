@@ -72,9 +72,6 @@ const Create = () => {
     return () => clearTimeout(handler);
   }, [listPrice.value, discountRateBps.value]);
 
-  React.useEffect(() => {
-    console.log('Download', images);
-  }, [images]);
   return (
     <div className="w-full h-full px-4 py-4 max-w-240">
       <div className="w-full h-full py-8 px-4 space-y-8 border border-gray-200 rounded-2xl">

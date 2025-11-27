@@ -17,6 +17,7 @@ import { useGetCs } from '@/api/cs';
 import { Cs } from '@/types/cs';
 import { useCsInfo } from '@/stores/useCsInfo';
 import { RowDisplay } from '@/app/(afterLogin)/components/subtabs/row-form';
+import Loading from '@/components/ui/loading';
 
 const CsDetail = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -56,7 +57,9 @@ const CsDetail = ({ id }: { id: string }) => {
     return () => setCsInfo(initialCs);
   }, []);
 
-  if (!isSuccess) return <p>Loading.....</p>;
+  if (!isSuccess) {
+    return <Loading />;
+  }
   return (
     <div className="h-full w-full px-4 py-4 overflow-y-scroll">
       <Dialog>
