@@ -16,12 +16,6 @@ import OrdersChart from '@/app/(afterLogin)/orders/components/ordersChart';
 import { useGetDashboard } from '@/api/dashboard';
 import Loading from '@/components/ui/loading';
 
-interface UserStatus {
-  date: string;
-  totalUsers: number;
-  newUsers: number;
-}
-
 const Dashboard = () => {
   const { data, isSuccess } = useGetDashboard();
 
