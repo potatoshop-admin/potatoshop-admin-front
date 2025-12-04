@@ -23,8 +23,15 @@ apiInstance.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       Cookies.remove('token');
-      // 토큰 만료 → 로그인 페이지로 보내기
-      window.location.href = '/sign-in';
+      const loginErrorMessages: string[] = [
+        '존재하지 않는 유저입니다.',
+        '비밀번호가 일치하지 않습니다.',
+      ];
+      const statusMessage: string = err.response?.data.statusMessage;
+      if (!loginErrorMessages.includes(statusMessage)) {
+        // 토큰 만료 → 로그인 페이지로 보내기
+        window.location.href = '/sign-in';
+      }
     }
     return Promise.reject(err);
   }
