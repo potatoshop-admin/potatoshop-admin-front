@@ -6,5 +6,6 @@ export { default as RowSelect } from './row-select';
 export { default as RowTextArea } from './row-textarea';
 export { default as RowSelectDouble } from './row-select-double';
 export { default as RowDragAndDropImages } from './row-drag-and-drop-images';
+export { default as RowTwoButtons } from './row-two-buttons';
 
 export type { DoubleSelectValue } from './row-select-double';
