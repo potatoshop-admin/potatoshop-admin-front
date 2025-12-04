@@ -116,12 +116,12 @@ const RowDragAndDropImages: React.FC<RowDragAndDropImagesProps> = ({ label, stat
             <Image
               src={image}
               alt="미리보기"
-              width={size.w || 100}
-              height={size.h || 100}
+              width={size.w || 400}
+              height={size.h || 400}
               onLoadingComplete={(img) => {
                 setSize({ w: img.naturalWidth, h: img.naturalHeight });
               }}
-              className="min-w-100"
+              style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
             />
             <div className="w-fit flex space-x-2">
               <button
@@ -158,7 +158,9 @@ const RowDragAndDropImages: React.FC<RowDragAndDropImagesProps> = ({ label, stat
                 <div key={index} className="w-30 h-60 relative rounded-md">
                   <Image
                     src={item.src}
-                    fill
+                    width={300}
+                    height={300}
+                    style={{ objectFit: 'cover', width: 'auto', height: '100%' }}
                     alt="미리보기"
                     className="object-contain"
                     onClick={() => {
