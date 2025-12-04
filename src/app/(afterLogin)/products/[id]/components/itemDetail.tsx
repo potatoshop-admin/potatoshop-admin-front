@@ -64,10 +64,11 @@ const ItemDetail = ({ id }: { id: string }) => {
                 src={image.url}
                 key={image.sortOrder}
                 alt={`${item.title}+${image.sortOrder}`}
+                loading="lazy"
+                priority={false}
                 height={300}
                 width={1000}
                 style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
-                priority
               />
             ))
           ) : (
