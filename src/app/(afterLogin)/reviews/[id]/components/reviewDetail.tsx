@@ -3,17 +3,10 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { useDeleteReview, useGetReview } from '@/api/review';
 import { Button } from '@/components/ui/button';
 import { RowDisplay } from '@/app/(afterLogin)/components/subtabs/row-form';
-import { useDeleteReview, useGetReview } from '@/api/review';
+import DeleteDialog from '@/app/(afterLogin)/components/subtabs/delete-dialog';
 import Loading from '@/components/ui/loading';
 
 const ReviewDetail = ({ id }: { id: string }) => {
@@ -42,32 +35,7 @@ const ReviewDetail = ({ id }: { id: string }) => {
   }
   return (
     <div className="h-full w-full px-4 py-4 overflow-y-scroll">
-      <Dialog>
-        <div className="w-full h-fit pb-6 flex justify-between items-center">
-          <h1 className="font-24-extrabold sm:text-[28px]">{data?.data.name}</h1>
-          <DialogTrigger asChild>
-            <Button variant="destructive" size="roundedDefault">
-              리뷰 삭제
-            </Button>
-          </DialogTrigger>
-        </div>
-        <DialogContent>
-          <DialogTitle>리뷰 삭제</DialogTitle>
-          <p>해당 리뷰를 삭제하시겠습니까?</p>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" size="default" variant="outline">
-                취소
-              </Button>
-            </DialogClose>
-            <DialogClose asChild>
-              <Button type="button" size="default" variant="default" onClick={deleteReview}>
-                확인
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteDialog title={data?.data.name} item="리뷰" onClick={deleteReview} />
       <div className="w-full h-fit rounded-md border-2 border-gray-200 px-4 py-4 space-y-6">
         <RowDisplay value={data?.data.title} label="리뷰 아이템" />
         <RowDisplay value={data?.data.userName} label="리뷰 작성자" />

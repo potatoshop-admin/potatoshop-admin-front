@@ -5,18 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useUserInfo } from '@/stores/useUserInfo';
 import { useDeleteUser, useGetUser } from '@/api/users';
 import { toast } from 'sonner';
-import { RowDisplay } from '@/app/(afterLogin)/components/subtabs/row-form';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { User } from '@/types/user';
+import { RowDisplay, RowTwoButtons } from '@/app/(afterLogin)/components/subtabs/row-form';
+import DeleteDialog from '@/app/(afterLogin)/components/subtabs/delete-dialog';
 import Loading from '@/components/ui/loading';
+import { User } from '@/types/user';
 
 const UserDetail = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -47,6 +39,10 @@ const UserDetail = ({ id }: { id: string }) => {
     mutate({ id: Number(id) });
   };
 
+  const editBtn = () => {
+    router.push(`/users/${id}/edit`);
+  };
+
   React.useEffect(() => {
     if (data?.data) {
       toast.success(`${data.statusMessage}`);
@@ -63,32 +59,7 @@ const UserDetail = ({ id }: { id: string }) => {
   }
   return (
     <div className="h-full w-full px-4 py-4 overflow-y-scroll">
-      <Dialog>
-        <div className="w-full h-fit pb-6 flex justify-between items-center">
-          <h1 className="font-24-extrabold sm:text-[28px]">{data?.data.name}</h1>
-          <DialogTrigger asChild>
-            <Button variant="destructive" size="roundedDefault">
-              유저 삭제
-            </Button>
-          </DialogTrigger>
-        </div>
-        <DialogContent>
-          <DialogTitle>유저 삭제</DialogTitle>
-          <p>해당 유저를 삭제하시겠습니까?</p>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" size="default" variant="outline">
-                취소
-              </Button>
-            </DialogClose>
-            <DialogClose asChild>
-              <Button type="button" size="default" variant="default" onClick={deleteUser}>
-                확인
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteDialog title={data?.data.name} item="유저" onClick={deleteUser} />
       <div className="w-full h-fit rounded-md border-2 border-gray-200 px-4 py-4 space-y-6">
         <RowDisplay value={data?.data.logInId} label="아이디" />
         <RowDisplay value={data?.data.name} label="유저 이름" />
@@ -96,28 +67,7 @@ const UserDetail = ({ id }: { id: string }) => {
         <RowDisplay value={data?.data.age === null ? '' : data?.data.age} label="나이" />
         <RowDisplay value={data?.data.email} label="이메일" />
         <RowDisplay value={data?.data.birthday === null ? '' : data?.data.birthday} label="생일" />
-        <div className="w-full h-fit flex space-x-2">
-          <Button
-            variant="outline"
-            size="fullWidth"
-            className="flex-1/2"
-            onClick={() => {
-              router.back();
-            }}
-          >
-            뒤로 돌아가기
-          </Button>
-          <Button
-            variant="default"
-            size="fullWidth"
-            className="flex-1/2"
-            onClick={() => {
-              router.push(`/users/${id}/edit`);
-            }}
-          >
-            유저 정보 수정
-          </Button>
-        </div>
+        <RowTwoButtons confirmTitle="유저정보 수정" cancelTitle="뒤로 돌아가기" onClick={editBtn} />
       </div>
     </div>
   );

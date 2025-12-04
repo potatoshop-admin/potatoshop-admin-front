@@ -5,8 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useGetItem } from '@/api/items';
-import { RowDisplay } from '@/app/(afterLogin)/components/subtabs/row-form';
-import { Button } from '@/components/ui/button';
+import { RowDisplay, RowTwoButtons } from '@/app/(afterLogin)/components/subtabs/row-form';
 import { Images, Item } from '@/types/item';
 import { URL } from '@/constants';
 import Loading from '@/components/ui/loading';
@@ -26,11 +25,13 @@ const ItemDetail = ({ id }: { id: string }) => {
     costPrice: 0,
     salePrice: 0,
     listPrice: 0,
-    currentProfitAmount: 0,
-    currentProfitRateBps: 0,
     discountRateBps: 0,
     images: [],
   });
+
+  const editBtn = () => {
+    router.push(`${URL.PRODUCTS_MANAGEMENT_EDIT}/${id}`);
+  };
 
   React.useEffect(() => {
     if (isSuccess) {
@@ -56,14 +57,13 @@ const ItemDetail = ({ id }: { id: string }) => {
         <RowDisplay value={item?.costPrice} label="costPrice (원)" />
         <RowDisplay value={item?.salePrice} label="salePrice (원)" />
         <RowDisplay value={item?.listPrice} label="listPrice (원)" />
-        <RowDisplay value={item?.currentProfitAmount} label="currentProfitAmount (원)" />
         <div className=" w-full h-80 flex py-2 space-x-2 overflow-x-auto ">
           {item?.images.length > 0 ? (
-            item?.images.map((image: Images, i: number) => (
+            item?.images.map((image: Images) => (
               <Image
                 src={image.url}
-                key={i}
-                alt={`${item.title}+${i}`}
+                key={image.sortOrder}
+                alt={`${item.title}+${image.sortOrder}`}
                 height={300}
                 width={1000}
                 style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
@@ -74,28 +74,7 @@ const ItemDetail = ({ id }: { id: string }) => {
             <p>이미지가 없습니다.</p>
           )}
         </div>
-        <div className="w-full h-fit flex space-x-2">
-          <Button
-            variant="outline"
-            size="fullWidth"
-            className="flex-1/2"
-            onClick={() => {
-              router.back();
-            }}
-          >
-            뒤로 돌아가기
-          </Button>
-          <Button
-            variant="default"
-            size="fullWidth"
-            className="flex-1/2"
-            onClick={() => {
-              router.push(`${URL.PRODUCTS_MANAGEMENT_EDIT}/${id}`);
-            }}
-          >
-            제품 수정
-          </Button>
-        </div>
+        <RowTwoButtons cancelTitle="뒤로 돌아가기" confirmTitle="제품 수정" onClick={editBtn} />
       </div>
     </div>
   );
