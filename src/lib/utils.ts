@@ -16,3 +16,15 @@ export function getChangedFields<T extends Record<string, unknown>>(prev: T, nex
 
   return diff;
 }
+
+export function buildPatch<T extends object>(origin: T, current: T): Partial<T> {
+  const patch: Partial<T> = {};
+
+  (Object.keys(current) as (keyof T)[]).forEach((key) => {
+    if (current[key] !== origin[key]) {
+      patch[key] = current[key];
+    }
+  });
+
+  return patch;
+}
