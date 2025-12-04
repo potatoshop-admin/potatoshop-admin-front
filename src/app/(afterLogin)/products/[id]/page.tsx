@@ -1,12 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import ItemDetail from '@/app/(afterLogin)/products/[id]/components/itemDetail';
-
-interface PageProps {
-  params: {
-    [key: string]: string;
-  };
-}
+import { PageProps } from '@/types/pageType';
 
 export const metadata: Metadata = {
   title: '제품 상세 페이지 - Potato Admin',
