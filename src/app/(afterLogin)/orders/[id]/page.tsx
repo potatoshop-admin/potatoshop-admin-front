@@ -1,11 +1,6 @@
 import React from 'react';
 import OrderDetail from '@/app/(afterLogin)/orders/[id]/components/orderDetail';
-
-interface PageProps {
-  params: {
-    [key: string]: string;
-  };
-}
+import { PageProps } from '@/types/pageType';
 
 export default async function Id({ params }: PageProps) {
   const { id } = await params;

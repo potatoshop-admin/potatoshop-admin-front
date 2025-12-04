@@ -1,12 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import ItemEdit from '@/app/(afterLogin)/products-management/edit/[id]/components/itemEdit';
-
-interface PageProps {
-  params: {
-    [key: string]: string;
-  };
-}
+import { PageProps } from '@/types/pageType';
 
 export const metadata: Metadata = {
   title: '제품 수정 페이지 - Potato Admin',

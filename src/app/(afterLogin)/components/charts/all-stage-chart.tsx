@@ -12,17 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { Category } from '@/types/item';
-
-export interface DailyData {
-  category: Category;
-  totalSales: number;
-}
-
-export interface MonthlyData {
-  date: string;
-  categories: DailyData[];
-}
+import { Categories, DailyCategorySales } from '@/types/dashboard';
 
 interface RowType {
   date: string;
@@ -38,8 +28,8 @@ const AllStageChart = ({
   dailyData,
   monthlyData,
 }: {
-  dailyData: DailyData[];
-  monthlyData: MonthlyData[];
+  dailyData: Categories[];
+  monthlyData: DailyCategorySales[];
 }) => {
   const bChart = [
     { id: 'outwear', color: 'var(--color-primary-100)', stackId: 'a' },
@@ -95,10 +85,10 @@ const AllStageChart = ({
     };
   });
 
-  const formattedMonthlyData = monthlyData.map((entry: MonthlyData) => {
+  const formattedMonthlyData = monthlyData.map((entry: DailyCategorySales) => {
     const row: RowType = { date: entry.date };
 
-    entry.categories.forEach((item: DailyData) => {
+    entry.categories.forEach((item: Categories) => {
       row[item.category] = item.totalSales;
     });
 

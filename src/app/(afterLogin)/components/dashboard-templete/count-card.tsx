@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-interface DashboardCardProps {
+interface CountCardProps {
   label: string;
   value: string;
   review?: string;
 }
 
-const DashboardCard: React.FC<DashboardCardProps> = ({ label, value, review }) => {
+const CountCard: React.FC<CountCardProps> = ({ label, value, review }) => {
   return (
     <Card className="w-full h-30 borer-gray-50 truncate px-4 bg-transparent">
       <CardHeader className="mt-0">
@@ -28,4 +28,4 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ label, value, review }) =
     </Card>
   );
 };
-export default React.memo(DashboardCard);
+export default React.memo(CountCard);

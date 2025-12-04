@@ -116,6 +116,8 @@ const RowDragAndDropImages: React.FC<RowDragAndDropImagesProps> = ({ label, stat
             <Image
               src={image}
               alt="미리보기"
+              loading="lazy"
+              priority={false}
               width={size.w || 400}
               height={size.h || 400}
               onLoadingComplete={(img) => {
@@ -158,6 +160,8 @@ const RowDragAndDropImages: React.FC<RowDragAndDropImagesProps> = ({ label, stat
                 <div key={index} className="w-30 h-60 relative rounded-md">
                   <Image
                     src={item.src}
+                    loading="lazy"
+                    priority={false}
                     width={300}
                     height={300}
                     style={{ objectFit: 'cover', width: 'auto', height: '100%' }}
