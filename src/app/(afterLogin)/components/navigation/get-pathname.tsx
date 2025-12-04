@@ -33,8 +33,7 @@ const GetPathname = () => {
   const router = useRouter();
   const breadcrumbs = getBreadcrumbByPath(pathname);
 
-  const blockedPath: string[] = [URL.PRODUCTS_MANAGEMENT, URL.ORDERS, URL.PRODUCTS];
-
+  const blockedPath: string[] = [URL.PRODUCTS_MANAGEMENT];
   const pathButton = (event: React.MouseEvent, url: string) => {
     if (pathname === url) {
       event.preventDefault();

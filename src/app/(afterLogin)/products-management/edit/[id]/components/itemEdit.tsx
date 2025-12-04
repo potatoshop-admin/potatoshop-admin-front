@@ -11,24 +11,18 @@ import {
   usePatchItems,
   usePostItemImages,
 } from '@/api/items';
-import { Button } from '@/components/ui/button';
 import {
   RowDisplay,
   RowDragAndDropImages,
   RowInput,
   RowSelect,
+  RowTwoButtons,
 } from '@/app/(afterLogin)/components/subtabs/row-form';
 import { PreviewItem } from '@/app/(afterLogin)/components/subtabs/row-form/row-drag-and-drop-images';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Category, Images, Item, Season } from '@/types/item';
 import { categoriesSelect, seasonsSelect } from '@/constants';
+import { buildPatch } from '@/lib/utils';
+import DeleteDialog from '@/app/(afterLogin)/components/subtabs/delete-dialog';
 
 const ItemEdit = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -86,6 +80,49 @@ const ItemEdit = ({ id }: { id: string }) => {
   const handleDeleteItem = () => {
     deleteItem({ id: Number(id) });
   };
+
+  const editItemBtn = () => {
+    const origin = originItemRef.current;
+    if (!origin) return;
+
+    const current: Item = {
+      ...origin,
+      title: title.value as string,
+      description: description.value as string,
+      stock: Number(stock.value),
+      costPrice: Number(costPrice.value),
+      listPrice: Number(listPrice.value),
+      discountRateBps: Number(discountRateBps.value),
+      category: category as Category,
+      salePrice,
+      season: season as Season,
+    };
+
+    const patchItem: Partial<Item> = buildPatch(origin, current);
+
+    if (Object.keys(patchItem).length === 0) {
+      toast.error('변경된 내용이 없습니다.');
+      return;
+    }
+
+    itemEdit({
+      id: Number(id),
+      item: patchItem,
+    });
+
+    const originImages = originItemRef.current?.images.map((img: Images) => img.url);
+    const editedImages = images.map((img: PreviewItem) => img.src);
+    if (JSON.stringify(originImages) !== JSON.stringify(editedImages)) {
+      const deleteFiles = images
+        .filter((image) => image.src.startsWith('https://'))
+        .map((image) => image.src);
+      imageDelete({
+        id: Number(id),
+        file: deleteFiles,
+      });
+    }
+  };
+
   React.useEffect(() => {
     if (isSuccess) {
       toast.success(`${data.statusMessage}`);
@@ -102,7 +139,7 @@ const ItemEdit = ({ id }: { id: string }) => {
       setSeason(item.season as Season);
       setSalePrice(item.salePrice as number);
       setCategory(item.category as Category);
-      const dbImages: PreviewItem[] = item.images.map((img) => ({
+      const dbImages: PreviewItem[] = item.images.map((img: Images) => ({
         src: img.url,
         openUrl: img.url,
         origin: 'db',
@@ -125,32 +162,7 @@ const ItemEdit = ({ id }: { id: string }) => {
 
   return (
     <div className="h-full w-full px-4 py-4 overflow-y-scroll">
-      <Dialog>
-        <div className="w-full h-fit pb-6 flex justify-between items-center">
-          <h1 className="font-24-extrabold sm:text-[28px]">{originTitle}</h1>
-          <DialogTrigger asChild>
-            <Button variant="destructive" size="roundedDefault">
-              아이템 삭제
-            </Button>
-          </DialogTrigger>
-        </div>
-        <DialogContent>
-          <DialogTitle>아이템 삭제</DialogTitle>
-          <p>해당 아이템을 삭제하시겠습니까?</p>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" size="default" variant="outline">
-                취소
-              </Button>
-            </DialogClose>
-            <DialogClose asChild>
-              <Button type="button" size="default" variant="default" onClick={handleDeleteItem}>
-                확인
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteDialog title={originTitle} item="아이템" onClick={handleDeleteItem} />
       <div className="overflow-hidden rounded-md border-2 border-gray-200 px-4 py-4 space-y-6">
         <RowInput
           value={title.value}
@@ -207,41 +219,7 @@ const ItemEdit = ({ id }: { id: string }) => {
           inputAssist="%"
         />
         <RowDragAndDropImages label="상품 이미지" state={images} setState={setImages} />
-        <div className="w-full space-x-2 flex h-fit">
-          <Button variant="outline" size="fullWidth" className="flex-1/2">
-            편집 취소
-          </Button>
-          <Button
-            variant="default"
-            size="fullWidth"
-            className="flex-1/2"
-            onClick={() => {
-              itemEdit({
-                id: Number(id),
-                item: {
-                  title: title.value as string,
-                  description: description.value as string,
-                  stock: Number(stock.value),
-                  costPrice: Number(costPrice.value),
-                  listPrice: Number(listPrice.value),
-                  discountRateBps: Number(discountRateBps.value),
-                  category: category as Category,
-                  salePrice,
-                  season: season as Season,
-                },
-              });
-              const deleteFiles = images
-                .filter((image) => image.src.startsWith('https://'))
-                .map((image) => image.src);
-              imageDelete({
-                id: Number(id),
-                file: deleteFiles,
-              });
-            }}
-          >
-            아이템 편집
-          </Button>
-        </div>
+        <RowTwoButtons onClick={editItemBtn} cancelTitle="편집 취소" confirmTitle="아이템 편집" />
       </div>
     </div>
   );

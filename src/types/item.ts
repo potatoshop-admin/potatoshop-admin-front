@@ -20,6 +20,4 @@ export interface Item {
   stock: number;
   season: Season;
   images: Images[];
-  currentProfitAmount: number;
-  currentProfitRateBps: number;
 }

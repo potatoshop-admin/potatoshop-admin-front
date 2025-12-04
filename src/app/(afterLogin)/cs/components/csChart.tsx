@@ -61,11 +61,13 @@ const CsChart = () => {
       label: '문의 진행 상황',
       options: 'filtered',
       filteredValues: ['WAITING', 'ANSWERED'],
+      onClick: userTitleClick,
     },
     {
       accessorKey: 'question',
       label: '질문',
       options: 'sorted',
+      onClick: userTitleClick,
     },
     {
       accessorKey: 'answer',
@@ -74,7 +76,6 @@ const CsChart = () => {
     },
   ];
   const columns: ColumnDef<CustomerCs>[] = TableColumnsCreate(columnsData);
-  //가공해야 할 데이터들이 있으면 해당 방식으로 해결
   const processedData: CustomerCs[] = useMemo(() => {
     return data?.data.map(
       (cs: Cs): CustomerCs => ({

@@ -35,13 +35,11 @@ export type CustomerItem = {
   itemId: number;
   category: Category;
   costPrice: number;
-  currentProfitAmount: number;
-  currentProfitRateBps: number;
   description: string;
   discountRateBps: number;
   listPrice: number;
   salePrice: number;
-  season: Season;
+  season: '전 시즌' | '현 시즌';
   stock: number;
   title: string;
 };
@@ -90,41 +88,31 @@ const ItemsChart = ({ chartTitle, season }: { chartTitle: string; season?: Seaso
       accessorKey: 'season',
       label: '제품 시즌',
       options: 'filtered',
-      filteredValues: ['CURRENT', 'ARCHIVE'],
+      filteredValues: ['전 시즌', '현 시즌'],
     },
     {
       accessorKey: 'costPrice',
-      label: 'costPrice',
+      label: '원가',
       options: 'sorted',
     },
     {
       accessorKey: 'listPrice',
-      label: 'listPrice',
+      label: '정가',
       options: 'sorted',
     },
     {
       accessorKey: 'salePrice',
-      label: 'salePrice',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'currentProfitAmount',
-      label: 'currentProfitAmount',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'currentProfitRateBps',
-      label: 'currentProfitRateBps',
+      label: '판매가',
       options: 'sorted',
     },
     {
       accessorKey: 'discountRateBps',
-      label: 'discountRateBps',
+      label: '할인율',
       options: 'sorted',
     },
     {
       accessorKey: 'category',
-      label: 'category',
+      label: '카테고리',
       options: 'filtered',
       filteredValues: ['outwear', 'top', 'skirt', 'pants', 'dress', 'acc'],
     },
@@ -135,6 +123,7 @@ const ItemsChart = ({ chartTitle, season }: { chartTitle: string; season?: Seaso
     return data?.data.map(
       (item: Item): CustomerItem => ({
         ...item,
+        season: item.season === 'ARCHIVE' ? '전 시즌' : '현 시즌',
         description:
           item.description.length > 5 ? item.description.substring(0, 5) : item.description,
       })
