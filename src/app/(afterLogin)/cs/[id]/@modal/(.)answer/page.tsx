@@ -21,10 +21,12 @@ export default function CsEditModal() {
     },
   });
 
+  const [disabled, setDisabled] = React.useState(true);
+  const [answer, setAnswer] = React.useState<string>(cs.answer ? cs.answer : '');
+
   const handleClose = () => {
     router.back();
   };
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newData: Partial<Cs> = {
@@ -32,12 +34,17 @@ export default function CsEditModal() {
     };
 
     const changedValue: Partial<Cs> = getChangedFields(cs, newData);
-
     mutate({ id: cs.csId, cs: changedValue });
     router.back();
   };
+  React.useEffect(() => {
+    if (answer.length < 1) {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [answer]);
 
-  const [answer, setAnswer] = React.useState<string>(cs.answer ? cs.answer : '');
   return (
     <Dialog
       open
@@ -56,7 +63,7 @@ export default function CsEditModal() {
                 취소
               </Button>
             </DialogClose>
-            <DialogClose asChild>
+            <DialogClose asChild disabled={disabled}>
               <Button type="submit" size="default" variant="default">
                 저장
               </Button>
