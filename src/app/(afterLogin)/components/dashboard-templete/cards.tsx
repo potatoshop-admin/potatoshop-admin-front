@@ -13,7 +13,7 @@ const Cards = ({ data }: { data: Dashboard }) => {
       </div>
       <div className="w-full h-fit flex space-x-4">
         <CountCard label="배송 중" value={data.shippingCount.toString()} />
-        <CountCard label="베송 완료" value={data.deliveredCount.toString()} />
+        <CountCard label="배송 완료" value={data.deliveredCount.toString()} />
       </div>
       <div className="w-full h-fit flex sm:hidden xl:flex space-x-4">
         <CountCard label="총 문의 건" value={data.totalCsCount.toString()} />
