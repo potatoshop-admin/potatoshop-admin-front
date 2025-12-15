@@ -84,7 +84,7 @@ const SignInForm = () => {
       <h1 className="font-24-extrabold sm:text-[28px] text-gray-800">potato admin</h1>
       <div className="flex flex-col space-y-4">
         <div className="flex flex-col space-y-2">
-          <p className="font-14-bold text-gray-700">이메일</p>
+          <p className="font-14-bold text-gray-700">아이디</p>
           <Input placeholder="your login id" value={id.value} onChange={id.onChange} type="text" />
         </div>
         <div className="flex flex-col space-y-2 relative">

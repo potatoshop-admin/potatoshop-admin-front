@@ -17,7 +17,7 @@ export const STATUS = {
   PRODUCTS_MANAGEMENT_EDIT: '제품 수정',
   ORDERS: '전체',
   ORDERS_PAID: '결제 완료',
-  ORDERS_PROCESSING: '상품 준비 중',
+  ORDERS_PROCESSING: '제품 준비 중',
   ORDERS_SHIPPING: '배송중',
   ORDERS_DELIVERED: '배송 완료',
   ORDERS_CANCEL_REQUESTED: '취소 요청',
@@ -33,8 +33,8 @@ export type StatusValue = (typeof STATUS)[StatusKey];
 
 export const MENU = {
   DASHBOARD: '대시보드',
-  PRODUCTS: '상품',
-  PRODUCTS_MANAGEMENT: '상품 관리',
+  PRODUCTS: '제품',
+  PRODUCTS_MANAGEMENT: '제품 관리',
   ORDERS: '주문 목록',
   USERS: '유저 관리',
   CS: 'cs 문의',

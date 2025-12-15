@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# POTATO SHOP ADMIN
 
-## Getting Started
+옷 쇼핑몰의 **상품 / 주문 / CS(문의)** 를 관리할 수 있는 어드민 웹입니다.
+**TanStack Table(React Table)** 기반으로 목록을 구성해, 많은 데이터를 **상태별로 빠르게 파악**할 수 있도록 만드는 것이 목표였습니다.
 
-First, run the development server:
+--------------------------------------------------------------
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Tech Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Next.js 15 / React / TypeScript
+- React Query / TanStack Table(React Table)
+- Zustand
+- shadcn/ui / Tailwind CSS
+- cookies / axios / jwt-decode
+- 배포: EC2, Nginx
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---------------------------------------------------------------
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Pages
 
-## Learn More
+###### App Router 구조를 (beforeLogin), (afterLogin) 으로 분리해 인증 전/후 화면을 명확히 구분했습니다.
 
-To learn more about Next.js, take a look at the following resources:
+#### Auth
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 로그인
+- 스토어 유저 로그인
+- 인증 성공 시 대시보드로 이동
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### Store
 
-## Deploy on Vercel
+- 스토어 생성
+- 관리할 스토어 생성
+- 스토어 유저 생성
+- 생성된 스토어에 속한 유저 생성
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Dashboard
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 30초마다 refetch로 주요 지표 갱신
+- Lazy loading 적용으로 초기 로딩 번들 축소 (115kb → 3.07kb)
+
+#### Products
+
+- 제품 목록
+- 전체 / 현 시즌 / 전 시즌
+- 제품 관리
+- 제품 등록 / 수정
+
+#### Orders
+
+- 주문 목록(상태별 필터)
+- 전체, 결제 완료, 제품 준비중, 배송중, 배송 완료
+- 취소 요청/완료, 교환 요청/완료, 반품 요청/완료
+
+#### CS / Review / Users
+
+- CS 문의 관리
+- 리뷰 관리
+- 유저 관리
+- 스토어 유저 관리
+  -권한: MASTER / MANAGER / STAFF
+- MASTER 권한은 메뉴바 프로필 → Manage User에서 접근 가능
+
+----------------------------------------------------------------
+
+#### 반응형 레이아웃: 사이드바 & 메뉴 탭
+
+화면 크기에 따라 사이드바가 축소/확장되고, 모바일에서는 메뉴 탭 형태로 전환됩니다.
+<p align="center">
+<img src="/public/readmeImage/Screenshot%202025-12-16%20at%2012.06.49%E2%80%AFAM.png" width="700" alt="sidebar" />
+<img src="/public/readmeImage/Screenshot%202025-12-16%20at%2012.07.00%E2%80%AFAM.png" width="700" alt="sidebar-close" />
+<img src="/public/readmeImage/Screenshot%202025-12-16%20at%2012.07.23%E2%80%AFAM.png" width="300" alt="menu-tab-fold" />
+<img src="/public/readmeImage/Screenshot%202025-12-16%20at%2012.07.29%E2%80%AFAM.png" width="300" alt="menu-tab-unfold" />
+</p>
+
+-------------------------------------------------------------------
+
+#### 대시보드 화면 및 React-table이 사용된 상품 화면
+
+<p align="center">
+<img src="/public/readmeImage/Screenshot%202025-12-16%20at%201.25.24%E2%80%AFAM.png" width="350" alt="sidebar" />
+<img src="/public/readmeImage/Screenshot%202025-12-16%20at%201.25.47%E2%80%AFAM.png" width="350" alt="sidebar-close" />
+<img src="/public/readmeImage/Screenshot%202025-12-16%20at%201.26.52%E2%80%AFAM.png" width="350" alt="menu-tab-fold" />
+<img src="/public/readmeImage/Screenshot%202025-12-16%20at%201.27.00%E2%80%AFAM.png" width="350" alt="menu-tab-unfold" />
+</p>
