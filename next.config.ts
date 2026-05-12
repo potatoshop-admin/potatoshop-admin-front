@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  basePath: '/fashion-admin',
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
