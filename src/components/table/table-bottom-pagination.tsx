@@ -35,10 +35,7 @@ export function TableBottomPagination<TData>({
             table.setPageSize(Number(number));
           }}
         >
-          <SelectTrigger
-            aria-label="페이지당 표시 개수 선택"
-            title="페이지당 표시 개수 선택"
-          >
+          <SelectTrigger aria-label="페이지당 표시 개수 선택" title="페이지당 표시 개수 선택">
             <SelectValue placeholder="보기옵션 선택" />
           </SelectTrigger>
           <SelectContent>

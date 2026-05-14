@@ -373,3 +373,23 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Loading 컴포넌트용 도트 애니메이션 (lottie 대체) */
+@keyframes loading-dot-bounce {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.loading-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    background-color: var(--primary-500, #3b82f6);
+    animation: loading-dot-bounce 1.2s ease-in-out infinite both;
+}

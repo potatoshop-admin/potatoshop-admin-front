@@ -69,10 +69,7 @@ const ProfileDropdown = () => {
               <DropdownMenuShortcut>{role}</DropdownMenuShortcut>
             </DropdownMenuItem>
             {role === 'MASTER' && (
-              <DropdownMenuItem
-                onClick={settingButton}
-                aria-label="사용자 관리 페이지로 이동"
-              >
+              <DropdownMenuItem onClick={settingButton} aria-label="사용자 관리 페이지로 이동">
                 사용자 관리
               </DropdownMenuItem>
             )}
