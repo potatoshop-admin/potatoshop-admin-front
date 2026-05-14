@@ -2,6 +2,7 @@ import React from 'react';
 import SignInForm from '@/app/(beforeLogin)/sign-in/components/sign-in-form';
 import PotatoAdmin from '@/../public/common/potatoAdmin.png';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const SignIn = () => {
   return (
@@ -17,8 +18,8 @@ const SignIn = () => {
       </div>
       <div className="flex flex-1 h-full items-center justify-center bg-gray-100">
         <div className="fixed top-0 right-3 font-16-medium text-gray-600 w-fit space-x-3 p-2">
-          <a href="/create/store">스토어 생성</a>
-          <a href="/create/sign-up">아이디 생성</a>
+          <Link href="/create/store">스토어 생성</Link>
+          <Link href="/create/sign-up">아이디 생성</Link>
         </div>
         <div className="flex-1 flex items-center justify-center">
           <SignInForm />
