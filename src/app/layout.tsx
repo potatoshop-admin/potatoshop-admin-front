@@ -11,6 +11,9 @@ const pretendard = localFont({
   display: 'swap',
   weight: '100 900',
   variable: '--font-pretendard',
+  preload: true, // 기본값이지만 의도 명시 — <link rel="preload"> 자동 삽입
+  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'], // 폰트 로드 전 폴백 명시
+  adjustFontFallback: 'Arial', // 폴백→웹폰트 swap 시 레이아웃 시프트 자동 보정
 });
 
 export const metadata: Metadata = {
