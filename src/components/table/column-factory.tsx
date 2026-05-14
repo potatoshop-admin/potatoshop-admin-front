@@ -53,6 +53,8 @@ export function FilterableHeader<TData>({ label, column, options }: HeaderProps<
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
+            name="filter button"
+            aria-label="필터 버튼"
             variant="ghost"
             className={cn('h-8 w-8 p-0', activeFilter !== '' && 'bg-primary-100')}
           >
