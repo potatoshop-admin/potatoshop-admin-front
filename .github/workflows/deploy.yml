@@ -17,6 +17,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 2222
           script: |
-            cd ~/projects/fashion-admin
+            cd ~/projects/fashion-admin/frontend
             git pull origin main
+            cd ~/projects/fashion-admin
             docker compose up -d --build frontend

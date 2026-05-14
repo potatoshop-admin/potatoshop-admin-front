@@ -84,12 +84,22 @@ const SignInForm = () => {
       <h1 className="font-24-extrabold sm:text-[28px] text-gray-800">potato admin</h1>
       <div className="flex flex-col space-y-4">
         <div className="flex flex-col space-y-2">
-          <p className="font-14-bold text-gray-700">아이디</p>
-          <Input placeholder="your login id" value={id.value} onChange={id.onChange} type="text" />
+          <label htmlFor="sign-in-id" className="font-14-bold text-gray-700">
+            아이디
+          </label>
+          <Input
+            id="sign-in-id"
+            placeholder="your login id"
+            value={id.value}
+            onChange={id.onChange}
+            type="text"
+            name="id"
+          />
         </div>
         <div className="flex flex-col space-y-2 relative">
           {showPassword ? (
             <EyeIcon
+              aria-label="show password"
               className="absolute top-9 right-3 stroke-gray-400"
               onClick={() => setShowPassword(false)}
             />
@@ -99,11 +109,15 @@ const SignInForm = () => {
               onClick={() => setShowPassword(true)}
             />
           )}
-          <p className="font-14-bold text-gray-700">비밀번호</p>
+          <label htmlFor="sign-in-password" className="font-14-bold text-gray-700">
+            비밀번호
+          </label>
           <Input
+            id="sign-in-password"
             type={showPassword ? 'text' : 'password'}
             value={password.value}
             onChange={password.onChange}
+            name="password"
           />
         </div>
       </div>
