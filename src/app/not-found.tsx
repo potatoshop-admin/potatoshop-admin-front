@@ -8,9 +8,10 @@ export default function NotFound() {
   const router = useRouter();
 
   React.useEffect(() => {
-    setTimeout(() => {
-      router.back();
+    const timer = setTimeout(() => {
+      router.replace('/'); // basePath 있으면 자동으로 /fashion-admin으로 감
     }, 5000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -19,9 +20,7 @@ export default function NotFound() {
         animationData={error}
         loop
         autoplay
-        rendererSettings={{
-          preserveAspectRatio: 'xMidYMid slice',
-        }}
+        rendererSettings={{ preserveAspectRatio: 'xMidYMid slice' }}
         style={{ width: 400, height: 400 }}
       />
     </div>

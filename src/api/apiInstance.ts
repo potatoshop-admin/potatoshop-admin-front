@@ -30,7 +30,7 @@ apiInstance.interceptors.response.use(
       const statusMessage: string = err.response?.data.statusMessage;
       if (!loginErrorMessages.includes(statusMessage)) {
         // 토큰 만료 → 로그인 페이지로 보내기
-        window.location.href = '/sign-in';
+        window.location.href = 'fashion-admin/sign-in';
       }
     }
     return Promise.reject(err);
