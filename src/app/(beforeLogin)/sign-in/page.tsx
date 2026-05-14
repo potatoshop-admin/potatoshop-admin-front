@@ -11,6 +11,8 @@ const SignIn = () => {
         <Image
           src={PotatoAdmin}
           alt="로고"
+          aria-label="포테이토 어드민 로고"
+          title="포테이토 어드민 로고"
           height={400}
           width={400}
           className="min-h-70 min-w-70"
@@ -18,8 +20,22 @@ const SignIn = () => {
       </div>
       <div className="flex flex-1 h-full items-center justify-center bg-gray-100">
         <div className="fixed top-0 right-3 font-16-medium text-gray-600 w-fit space-x-3 p-2">
-          <Link href="/create/store">스토어 생성</Link>
-          <Link href="/create/sign-up">아이디 생성</Link>
+          <Link
+            href="/create/store"
+            aria-label="스토어 생성 페이지로 이동"
+            name="create-store-link"
+            title="스토어 생성"
+          >
+            스토어 생성
+          </Link>
+          <Link
+            href="/create/sign-up"
+            aria-label="아이디 생성 페이지로 이동"
+            name="create-sign-up-link"
+            title="아이디 생성"
+          >
+            아이디 생성
+          </Link>
         </div>
         <div className="flex-1 flex items-center justify-center">
           <SignInForm />
