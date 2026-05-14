@@ -16,7 +16,12 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 2222
+          script_stop: true # 한 줄이라도 실패하면 즉시 중단 + Actions 도 실패 표시
           script: |
+            set -euo pipefail               # 실패한 명령 그냥 넘어가지 않게 강제
             cd ~/projects/fashion-admin
-            git pull origin main
-            docker compose up -d --build frontend
+            git fetch origin main
+            git reset --hard origin/main    # pull 대신 reset → 충돌·로컬변경 가능성 차단
+            docker compose build --no-cache frontend  # 캐시 우회 → "분명 배포했는데 안 적용됨" 사고 방지
+            docker compose up -d frontend
+            docker image prune -f           # 옛 이미지 정리 (디스크 절약)
