@@ -16,7 +16,7 @@ import {
 } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import { TableColumnsCreate } from '@/components/table';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { URL } from '@/constants';
 import ChartTemplate from '@/app/(afterLogin)/components/charts/chartTemplate';
 import Loading from '@/components/ui/loading';
@@ -56,68 +56,43 @@ const ItemsChart = ({ chartTitle, season }: { chartTitle: string; season?: Seaso
     pageSize: 10,
   });
 
-  const userTitleClick = (data: CustomerItem) => {
-    const path = URL.PRODUCTS + '/' + data.itemId;
+  const userTitleClick = useCallback(
+    (data: CustomerItem) => {
+      router.push(URL.PRODUCTS + '/' + data.itemId);
+    },
+    [router]
+  );
 
-    router.push(path);
-  };
-  const columnsData: ColumnConfig<CustomerItem>[] = [
-    {
-      accessorKey: 'itemId',
-      label: 'id',
-      options: 'sorted',
-      onClick: userTitleClick,
-    },
-    {
-      accessorKey: 'title',
-      label: '제품명',
-      options: 'sorted',
-      onClick: userTitleClick,
-    },
-    {
-      accessorKey: 'description',
-      label: '제품 설명',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'stock',
-      label: '재고량',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'season',
-      label: '제품 시즌',
-      options: 'filtered',
-      filteredValues: ['전 시즌', '현 시즌'],
-    },
-    {
-      accessorKey: 'costPrice',
-      label: '원가',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'listPrice',
-      label: '정가',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'salePrice',
-      label: '판매가',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'discountRateBps',
-      label: '할인율',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'category',
-      label: '카테고리',
-      options: 'filtered',
-      filteredValues: ['outwear', 'top', 'skirt', 'pants', 'dress', 'acc'],
-    },
-  ];
-  const columns: ColumnDef<CustomerItem>[] = TableColumnsCreate(columnsData);
+  const columnsData: ColumnConfig<CustomerItem>[] = useMemo(
+    () => [
+      { accessorKey: 'itemId', label: 'id', options: 'sorted', onClick: userTitleClick },
+      { accessorKey: 'title', label: '제품명', options: 'sorted', onClick: userTitleClick },
+      { accessorKey: 'description', label: '제품 설명', options: 'sorted' },
+      { accessorKey: 'stock', label: '재고량', options: 'sorted' },
+      {
+        accessorKey: 'season',
+        label: '제품 시즌',
+        options: 'filtered',
+        filteredValues: ['전 시즌', '현 시즌'],
+      },
+      { accessorKey: 'costPrice', label: '원가', options: 'sorted' },
+      { accessorKey: 'listPrice', label: '정가', options: 'sorted' },
+      { accessorKey: 'salePrice', label: '판매가', options: 'sorted' },
+      { accessorKey: 'discountRateBps', label: '할인율', options: 'sorted' },
+      {
+        accessorKey: 'category',
+        label: '카테고리',
+        options: 'filtered',
+        filteredValues: ['outwear', 'top', 'skirt', 'pants', 'dress', 'acc'],
+      },
+    ],
+    [userTitleClick]
+  );
+
+  const columns: ColumnDef<CustomerItem>[] = useMemo(
+    () => TableColumnsCreate(columnsData),
+    [columnsData]
+  );
 
   const processedData: CustomerItem[] = useMemo(() => {
     return data?.data.map(

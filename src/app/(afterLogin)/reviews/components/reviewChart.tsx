@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import { TableColumnsCreate } from '@/components/table';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { URL } from '@/constants';
 import { ColumnConfig } from '@/app/(afterLogin)/users/components/usersChart';
 import { useGetAllReview } from '@/api/review';
@@ -46,43 +46,38 @@ const ReviewChart = () => {
     pageSize: 10,
   });
 
-  const userTitleClick = (data: CustomerReview) => {
-    const path = URL.REVIEWS + '/' + data.reviewId;
+  const userTitleClick = useCallback(
+    (data: CustomerReview) => {
+      router.push(URL.REVIEWS + '/' + data.reviewId);
+    },
+    [router]
+  );
 
-    router.push(path);
-  };
-  const columnsData: ColumnConfig<CustomerReview>[] = [
-    {
-      accessorKey: 'reviewId',
-      label: 'id',
-      options: 'sorted',
-      onClick: userTitleClick,
-    },
-    {
-      accessorKey: 'title',
-      label: '리뷰 제품',
-      options: 'sorted',
-      onClick: userTitleClick,
-    },
-    {
-      accessorKey: 'userName',
-      label: '리뷰 작성자',
-      options: 'sorted',
-      onClick: userTitleClick,
-    },
-    {
-      accessorKey: 'rate',
-      label: '리뷰 평점',
-      options: 'filtered',
-      filteredValues: ['1', '2', '3', '4', '5'],
-    },
-    {
-      accessorKey: 'content',
-      label: '문의 진행 상황',
-      options: 'sorted',
-    },
-  ];
-  const columns: ColumnDef<CustomerReview>[] = TableColumnsCreate(columnsData);
+  const columnsData: ColumnConfig<CustomerReview>[] = useMemo(
+    () => [
+      { accessorKey: 'reviewId', label: 'id', options: 'sorted', onClick: userTitleClick },
+      { accessorKey: 'title', label: '리뷰 제품', options: 'sorted', onClick: userTitleClick },
+      {
+        accessorKey: 'userName',
+        label: '리뷰 작성자',
+        options: 'sorted',
+        onClick: userTitleClick,
+      },
+      {
+        accessorKey: 'rate',
+        label: '리뷰 평점',
+        options: 'filtered',
+        filteredValues: ['1', '2', '3', '4', '5'],
+      },
+      { accessorKey: 'content', label: '문의 진행 상황', options: 'sorted' },
+    ],
+    [userTitleClick]
+  );
+
+  const columns: ColumnDef<CustomerReview>[] = useMemo(
+    () => TableColumnsCreate(columnsData),
+    [columnsData]
+  );
 
   const processedData: CustomerReview[] = useMemo(() => {
     return data?.data.map(

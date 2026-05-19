@@ -15,6 +15,49 @@ export const useGetAllOrders = (params?: { orderStatus?: OrderStatus }) => {
   });
 };
 
+export interface OrderPageParams {
+  orderStatus?: OrderStatus;
+  page?: number;
+  size?: number;
+  sort?: string;
+  direction?: 'asc' | 'desc';
+  search?: string;
+}
+
+export interface PagedOrderResponse {
+  data: {
+    content: Order[];
+    totalElements: number;
+    totalPages: number;
+    number: number;
+    size: number;
+    first: boolean;
+    last: boolean;
+  };
+  success: boolean;
+  statusMessage: string;
+  statusNumber: number;
+}
+
+export const useGetOrdersPaged = (params: OrderPageParams) => {
+  const { page = 0, size = 10, sort = 'createdAt', direction = 'desc', ...rest } = params;
+  return useQuery({
+    queryKey: ['orders-paged', rest.orderStatus, page, size, sort, direction, rest.search],
+    queryFn: async () => {
+      const { data } = await apiInstance.get<PagedOrderResponse>('/orders/paged', {
+        params: {
+          ...rest,
+          page,
+          size,
+          sort: `${sort},${direction}`,
+        },
+      });
+      return data;
+    },
+    placeholderData: (previousData) => previousData,
+  });
+};
+
 export const useGetOrder = (param: { id: number }) => {
   return useQuery({
     queryKey: ['order', param.id],
