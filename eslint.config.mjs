@@ -28,6 +28,16 @@ const eslintConfig = [
       ],
     },
   },
+  // 테스트 파일은 규칙 완화 (mock 함수 any 타입, display-name 등)
+  {
+    files: ['src/__tests__/**/*.{ts,tsx}', '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      'react/display-name': 'off',
+      'import/order': 'off',
+      'prettier/prettier': 'off',
+    },
+  },
 ];
 
 export default eslintConfig;
