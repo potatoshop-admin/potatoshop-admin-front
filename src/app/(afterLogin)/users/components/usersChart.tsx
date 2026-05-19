@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useGetAllUsers } from '@/api/users';
 import { Grade, User } from '@/types/user';
 import { URL } from '@/constants';
@@ -68,51 +68,35 @@ const UsersChart = () => {
     pageSize: 10,
   });
 
-  const userNameClick = (data: CustomerUser) => {
-    const path = URL.USERS + '/' + data.userId;
+  const userNameClick = useCallback(
+    (data: CustomerUser) => {
+      router.push(URL.USERS + '/' + data.userId);
+    },
+    [router]
+  );
 
-    router.push(path);
-  };
-  const columnsData: ColumnConfig<CustomerUser>[] = [
-    {
-      accessorKey: 'userId',
-      label: 'id',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'name',
-      label: '이름',
-      options: 'sorted',
-      onClick: userNameClick,
-    },
-    {
-      accessorKey: 'logInId',
-      label: '아이디',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'grade',
-      label: '등급',
-      options: 'filtered',
-      filteredValues: ['BASIC', 'BLACK', 'VIP'],
-    },
-    {
-      accessorKey: 'email',
-      label: '이메일',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'age',
-      label: '나이',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'birthday',
-      label: '생일',
-      options: 'sorted',
-    },
-  ];
-  const columns: ColumnDef<CustomerUser>[] = TableColumnsCreate(columnsData);
+  const columnsData: ColumnConfig<CustomerUser>[] = useMemo(
+    () => [
+      { accessorKey: 'userId', label: 'id', options: 'sorted' },
+      { accessorKey: 'name', label: '이름', options: 'sorted', onClick: userNameClick },
+      { accessorKey: 'logInId', label: '아이디', options: 'sorted' },
+      {
+        accessorKey: 'grade',
+        label: '등급',
+        options: 'filtered',
+        filteredValues: ['BASIC', 'BLACK', 'VIP'],
+      },
+      { accessorKey: 'email', label: '이메일', options: 'sorted' },
+      { accessorKey: 'age', label: '나이', options: 'sorted' },
+      { accessorKey: 'birthday', label: '생일', options: 'sorted' },
+    ],
+    [userNameClick]
+  );
+
+  const columns: ColumnDef<CustomerUser>[] = useMemo(
+    () => TableColumnsCreate(columnsData),
+    [columnsData]
+  );
   //가공해야 할 데이터들이 있으면 해당 방식으로 해결
   const processedData: CustomerUser[] = React.useMemo(() => {
     return data?.data.map(

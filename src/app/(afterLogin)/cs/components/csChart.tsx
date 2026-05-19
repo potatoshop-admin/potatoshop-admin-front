@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import { TableColumnsCreate } from '@/components/table';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { URL } from '@/constants';
 import { useGetAllCs } from '@/api/cs';
 import { Cs, CsStatus } from '@/types/cs';
@@ -44,38 +44,33 @@ const CsChart = () => {
     pageSize: 10,
   });
 
-  const userTitleClick = (data: CustomerCs) => {
-    const path = URL.CS + '/' + data.csId;
+  const userTitleClick = useCallback(
+    (data: CustomerCs) => {
+      router.push(URL.CS + '/' + data.csId);
+    },
+    [router]
+  );
 
-    router.push(path);
-  };
-  const columnsData: ColumnConfig<CustomerCs>[] = [
-    {
-      accessorKey: 'csId',
-      label: 'id',
-      options: 'sorted',
-      onClick: userTitleClick,
-    },
-    {
-      accessorKey: 'csStatus',
-      label: '문의 진행 상황',
-      options: 'filtered',
-      filteredValues: ['WAITING', 'ANSWERED'],
-      onClick: userTitleClick,
-    },
-    {
-      accessorKey: 'question',
-      label: '질문',
-      options: 'sorted',
-      onClick: userTitleClick,
-    },
-    {
-      accessorKey: 'answer',
-      label: '답변',
-      options: 'sorted',
-    },
-  ];
-  const columns: ColumnDef<CustomerCs>[] = TableColumnsCreate(columnsData);
+  const columnsData: ColumnConfig<CustomerCs>[] = useMemo(
+    () => [
+      { accessorKey: 'csId', label: 'id', options: 'sorted', onClick: userTitleClick },
+      {
+        accessorKey: 'csStatus',
+        label: '문의 진행 상황',
+        options: 'filtered',
+        filteredValues: ['WAITING', 'ANSWERED'],
+        onClick: userTitleClick,
+      },
+      { accessorKey: 'question', label: '질문', options: 'sorted', onClick: userTitleClick },
+      { accessorKey: 'answer', label: '답변', options: 'sorted' },
+    ],
+    [userTitleClick]
+  );
+
+  const columns: ColumnDef<CustomerCs>[] = useMemo(
+    () => TableColumnsCreate(columnsData),
+    [columnsData]
+  );
   const processedData: CustomerCs[] = useMemo(() => {
     return data?.data.map(
       (cs: Cs): CustomerCs => ({

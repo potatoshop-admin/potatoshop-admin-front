@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import { TableColumnsCreate } from '@/components/table';
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { URL } from '@/constants';
 import { ColumnConfig } from '@/app/(afterLogin)/products/components/itemsChart';
 import { useGetAdminUsers, usePatchManager } from '@/api/adminUser';
@@ -53,46 +53,38 @@ const AdminUserChart = () => {
     pageSize: 10,
   });
 
-  const userTitleClick = (data: CustomAdminUser) => {
-    const path = URL.ORDERS + '/' + data.adminUserId;
+  const userTitleClick = useCallback(
+    (data: CustomAdminUser) => {
+      router.push(URL.ORDERS + '/' + data.adminUserId);
+    },
+    [router]
+  );
 
-    router.push(path);
-  };
-  const managerChangeClick = (data: CustomAdminUser) => {
-    if (data.role === 'STAFF') {
-      mutate({ id: Number(data.adminUserId), role: 'MANAGER' });
-    } else {
-      mutate({ id: Number(data.adminUserId), role: 'STAFF' });
-    }
-  };
-  const columnsData: ColumnConfig<CustomAdminUser>[] = [
-    {
-      accessorKey: 'adminUserId',
-      label: '유저 번호',
-      options: 'sorted',
+  const managerChangeClick = useCallback(
+    (data: CustomAdminUser) => {
+      mutate({
+        id: Number(data.adminUserId),
+        role: data.role === 'STAFF' ? 'MANAGER' : 'STAFF',
+      });
     },
-    {
-      accessorKey: 'name',
-      label: '이름',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'logInId',
-      label: '아이디',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'role',
-      label: '권한',
-      options: 'sorted',
-    },
-    {
-      accessorKey: 'managerChange',
-      label: '',
-      onClick: managerChangeClick,
-    },
-  ];
-  const columns: ColumnDef<CustomAdminUser>[] = TableColumnsCreate(columnsData);
+    [mutate]
+  );
+
+  const columnsData: ColumnConfig<CustomAdminUser>[] = useMemo(
+    () => [
+      { accessorKey: 'adminUserId', label: '유저 번호', options: 'sorted' },
+      { accessorKey: 'name', label: '이름', options: 'sorted' },
+      { accessorKey: 'logInId', label: '아이디', options: 'sorted' },
+      { accessorKey: 'role', label: '권한', options: 'sorted' },
+      { accessorKey: 'managerChange', label: '', onClick: managerChangeClick },
+    ],
+    [managerChangeClick]
+  );
+
+  const columns: ColumnDef<CustomAdminUser>[] = useMemo(
+    () => TableColumnsCreate(columnsData),
+    [columnsData]
+  );
   const processedData: CustomAdminUser[] = React.useMemo(() => {
     return data?.data.map(
       (adminUser: AdminUser): CustomAdminUser => ({

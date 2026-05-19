@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FormEvent } from 'react';
+import React, { FormEvent, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useInput } from '@/hooks/use-input';
 import { EyeClosedIcon, EyeIcon } from 'lucide-react';
@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLogin } from '@/api/adminUser';
 import { toast } from 'sonner';
-import Cookies from 'js-cookie';
 import { ApiResponseType } from '@/types/api';
 import { useLogInUser } from '@/stores/useLogInUser';
 import { jwtDecode } from 'jwt-decode';
+import Cookies from 'js-cookie';
 import { RoleType } from '@/types/adminUser';
 
 const SignInForm = () => {
@@ -45,11 +45,24 @@ const SignInForm = () => {
   });
 
   const [showPassword, setShowPassword] = React.useState(false);
-  const [disabled, setDisabled] = React.useState(true);
 
-  const handleSubmit = () => {
+  // useEffect+setState 이중 렌더 제거: 동기 계산으로 렌더당 1회만 평가
+  const disabled = useMemo(
+    () =>
+      !(
+        typeof id.value !== 'number' &&
+        typeof id.value === 'string' &&
+        id.value.length >= 3 &&
+        typeof password.value !== 'number' &&
+        typeof password.value === 'string' &&
+        password.value.length > 3
+      ),
+    [id.value, password.value]
+  );
+
+  const handleSubmit = React.useCallback(() => {
     mutate({ logInId: id.value as string, password: password.value as string });
-  };
+  }, [mutate, id.value, password.value]);
 
   React.useEffect(() => {
     const token: string | undefined = Cookies.get('token');
@@ -61,19 +74,6 @@ const SignInForm = () => {
       }
     }
   }, []);
-
-  React.useEffect(() => {
-    if (
-      typeof id.value !== 'number' &&
-      id.value?.length >= 3 &&
-      typeof password.value !== 'number' &&
-      password.value?.length > 3
-    ) {
-      setDisabled(false);
-    } else {
-      setDisabled(true);
-    }
-  }, [id.value, password.value]);
   return (
     <form
       className="w-74 h-fit max-h-200 space-y-4"

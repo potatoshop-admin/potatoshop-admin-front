@@ -22,15 +22,15 @@ apiInstance.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      Cookies.remove('token');
       const loginErrorMessages: string[] = [
         '존재하지 않는 유저입니다.',
         '비밀번호가 일치하지 않습니다.',
       ];
-      const statusMessage: string = err.response?.data.statusMessage;
+      const statusMessage: string = err.response?.data?.statusMessage;
       if (!loginErrorMessages.includes(statusMessage)) {
-        // 토큰 만료 → 로그인 페이지로 보내기
-        window.location.href = 'fashion-admin/sign-in';
+        // 토큰 만료 또는 인증 실패 → 쿠키 삭제 후 로그인 페이지로
+        Cookies.remove('token');
+        window.location.href = '/fashion-admin/sign-in';
       }
     }
     return Promise.reject(err);
