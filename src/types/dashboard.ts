@@ -28,4 +28,5 @@ export interface Dashboard {
   categoryTotalSale: Categories[];
   dailyCategorySales: DailyCategorySales[];
   userDailyStatus: UserDailyStatus[];
+  categoryDailySale: Categories[];
 }
