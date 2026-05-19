@@ -69,6 +69,7 @@ export const usePatchItems = (options: { onSuccess: (e: ApiResponseType<Item>) =
     ...options,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['item'] });
+      queryClient.invalidateQueries({ queryKey: ['items'] });
       options?.onSuccess?.(data);
     },
     onError: (error) => {

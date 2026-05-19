@@ -100,26 +100,33 @@ const ItemEdit = ({ id }: { id: string }) => {
 
     const patchItem: Partial<Item> = buildPatch(origin, current);
 
-    if (Object.keys(patchItem).length === 0) {
+    const originImages = (originItemRef.current?.images ?? []).map((img: Images) => img.url);
+    const editedImages = images.map((img: PreviewItem) => img.src);
+    const imagesChanged = JSON.stringify(originImages) !== JSON.stringify(editedImages);
+
+    // 아이템 필드도, 이미지도 변경 없으면 early return
+    if (Object.keys(patchItem).length === 0 && !imagesChanged) {
       toast.error('변경된 내용이 없습니다.');
       return;
     }
 
-    itemEdit({
-      id: Number(id),
-      item: patchItem,
-    });
+    // 아이템 필드 변경 시 PATCH 호출
+    if (Object.keys(patchItem).length > 0) {
+      itemEdit({ id: Number(id), item: patchItem });
+    }
 
-    const originImages = originItemRef.current?.images.map((img: Images) => img.url);
-    const editedImages = images.map((img: PreviewItem) => img.src);
-    if (JSON.stringify(originImages) !== JSON.stringify(editedImages)) {
+    // 이미지 변경 시 이미지 API 별도 호출
+    if (imagesChanged) {
       const deleteFiles = images
         .filter((image) => image.src.startsWith('https://'))
         .map((image) => image.src);
-      imageDelete({
-        id: Number(id),
-        file: deleteFiles,
-      });
+      imageDelete({ id: Number(id), file: deleteFiles });
+
+      // 이미지만 변경된 경우 (아이템 필드 변경 없음) → 직접 navigate
+      if (Object.keys(patchItem).length === 0) {
+        toast.success('이미지가 수정되었습니다.');
+        router.back();
+      }
     }
   };
 
