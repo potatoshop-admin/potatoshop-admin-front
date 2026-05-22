@@ -16,8 +16,8 @@ const PUBLIC_PATHS = ['/sign-in', '/create/sign-up', '/create/store'];
 
 // 미들웨어를 적용하지 않을 경로
 const SKIP_PATHS = [
-  '/api/',   // Next.js API 라우트 (개발 환경 호환)
-  '/napi/',  // Next.js 내부 API (proxy, auth) — Spring /api/ 충돌 방지용 경로
+  '/api/', // Next.js API 라우트 (개발 환경 호환)
+  '/napi/', // Next.js 내부 API (proxy, auth) — Spring /api/ 충돌 방지용 경로
   '/_next/', // Next.js 내부 파일
   '/favicon.ico',
   '/fonts/',
