@@ -84,7 +84,7 @@ export const useLogin = (options: {
 }) =>
   useMutation({
     mutationFn: async (payload: { logInId: string; password: string }): Promise<LoginResponse> => {
-      const res = await fetch('/fashion-admin/api/auth/login', {
+      const res = await fetch('/fashion-admin/napi/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -116,7 +116,7 @@ export const useLogin = (options: {
 export const useLogout = (options?: { onSuccess?: () => void }) =>
   useMutation({
     mutationFn: async () => {
-      const res = await fetch('/fashion-admin/api/auth/logout', { method: 'POST' });
+      const res = await fetch('/fashion-admin/napi/auth/logout', { method: 'POST' });
       return res.json();
     },
     onSuccess: () => {

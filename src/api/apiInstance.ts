@@ -12,12 +12,13 @@
 import axios from 'axios';
 
 // Next.js basePath(/fashion-admin)를 반영한 프록시 기본 URL
+// /napi/ 를 사용: Nginx가 /fashion-admin/api/* 를 Spring으로 라우팅하는 충돌 방지
 // 브라우저: window.location.origin 기준으로 프록시 경로 구성
 // SSR(서버 컴포넌트에서 호출 시): NEXT_PUBLIC_APP_URL 사용
 const PROXY_BASE_URL =
   typeof window !== 'undefined'
-    ? `${window.location.origin}/fashion-admin/api/proxy`
-    : `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/fashion-admin/api/proxy`;
+    ? `${window.location.origin}/fashion-admin/napi/proxy`
+    : `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/fashion-admin/napi/proxy`;
 
 const apiInstance = axios.create({
   baseURL: PROXY_BASE_URL,
@@ -41,7 +42,7 @@ apiInstance.interceptors.response.use(
     if (err.response?.status === 401) {
       // 토큰 만료 → 서버에서 httpOnly 쿠키 삭제 후 로그인 페이지로
       try {
-        await fetch('/fashion-admin/api/auth/logout', { method: 'POST' });
+        await fetch('/fashion-admin/napi/auth/logout', { method: 'POST' });
       } catch {
         // logout 실패해도 리다이렉트 진행
       }
