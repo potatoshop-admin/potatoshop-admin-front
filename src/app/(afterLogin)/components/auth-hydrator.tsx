@@ -35,7 +35,7 @@ export default function AuthHydrator() {
 
     const hydrate = async () => {
       try {
-        const res = await fetch('/fashion-admin/api/auth/me');
+        const res = await fetch('/fashion-admin/napi/auth/me');
         if (!res.ok) return; // middleware가 이미 처리했으므로 여기서 별도 처리 불필요
 
         const data: MeResponse = await res.json();
