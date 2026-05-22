@@ -12,6 +12,7 @@ export const useGetAllOrders = (params?: { orderStatus?: OrderStatus }) => {
       });
       return data;
     },
+    staleTime: 1000 * 30, // 30초 (주문은 자주 변경됨)
   });
 };
 
@@ -83,7 +84,7 @@ export const usePatchOrder = (options: { onSuccess: (e: ApiResponseType<Order>) 
     ...options,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
-      queryClient.refetchQueries({ queryKey: ['order'] });
+      queryClient.invalidateQueries({ queryKey: ['order'] });
       options?.onSuccess?.(data);
     },
     onError: (error) => {

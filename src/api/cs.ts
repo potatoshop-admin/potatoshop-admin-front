@@ -10,6 +10,7 @@ export const useGetAllCs = () => {
       const { data } = await apiInstance.get('/cs');
       return data;
     },
+    staleTime: 1000 * 60 * 1, // 1분 (CS는 빠른 응답이 필요해 짧게)
   });
 };
 
@@ -22,6 +23,7 @@ export const useGetCs = (param: { id: number }) => {
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 3,
   });
 };
 

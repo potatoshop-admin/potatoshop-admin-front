@@ -2,50 +2,34 @@
  * 로그인 폼 (SignInForm) 컴포넌트 테스트
  * Tests for the SignInForm component
  *
+ * [보안 변경 반영]
+ * - jwt-decode, js-cookie 더 이상 클라이언트에서 사용 안 함
+ * - useLogin이 Next.js /api/auth/login 라우트를 fetch로 호출
+ * - 성공 응답에 user 정보가 포함됨 (토큰 미포함)
+ *
  * 테스트 대상:
  * - 폼 렌더링 (Form rendering)
  * - 입력값 유효성에 따른 버튼 활성화 (Button enable/disable based on input validation)
  * - 비밀번호 토글 (Password visibility toggle)
  * - 로그인 API 호출 (Login API mutation call)
- * - 성공/실패 처리 (Success/error handling)
+ * - 성공/실패 처리 + Zustand 스토어 업데이트 (Success/error handling)
  */
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 const mockPush = jest.fn();
 const mockReplace = jest.fn();
 
-// Next.js router mock
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-// js-cookie mock
-jest.mock('js-cookie', () => ({
-  get: jest.fn(() => undefined),
-  set: jest.fn(),
-  remove: jest.fn(),
-}));
-
-// sonner toast mock
 jest.mock('sonner', () => ({
   toast: {
     success: jest.fn(),
     error: jest.fn(),
   },
-}));
-
-// JWT decode mock
-jest.mock('jwt-decode', () => ({
-  jwtDecode: jest.fn(() => ({
-    name: '테스트관리자',
-    sub: 'admin001',
-    role: 'MANAGER',
-    storeId: 1,
-    exp: 9999999999,
-    iat: 1000000000,
-  })),
 }));
 
 const mockMutate = jest.fn();
@@ -56,30 +40,26 @@ jest.mock('@/api/adminUser', () => ({
 }));
 
 const mockSetLogInUser = jest.fn();
-const mockDeleteLogInUser = jest.fn();
 jest.mock('@/stores/useLogInUser', () => ({
   useLogInUser: jest.fn(() => ({
     logInUser: { name: '', id: '', role: 'STAFF' },
     setLogInUser: mockSetLogInUser,
-    deleteLogInUser: mockDeleteLogInUser,
+    deleteLogInUser: jest.fn(),
   })),
 }));
 
 import SignInForm from '@/app/(beforeLogin)/sign-in/components/sign-in-form';
-import Cookies from 'js-cookie';
 import { toast } from 'sonner';
 
 describe('SignInForm 컴포넌트', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (Cookies.get as jest.Mock).mockReturnValue(undefined);
     const { useRouter } = jest.requireMock('next/navigation');
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush, replace: mockReplace });
   });
 
   it('로그인 폼 요소들이 올바르게 렌더링된다 | login form elements render correctly', () => {
     render(<SignInForm />);
-
     expect(screen.getByLabelText('아이디')).toBeInTheDocument();
     expect(screen.getByLabelText('비밀번호')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '로그인' })).toBeInTheDocument();
@@ -87,41 +67,34 @@ describe('SignInForm 컴포넌트', () => {
 
   it('초기 상태에서 로그인 버튼이 비활성화 되어있다 | login button is disabled initially', () => {
     render(<SignInForm />);
-    const button = screen.getByRole('button', { name: '로그인' });
-    expect(button).toBeDisabled();
+    expect(screen.getByRole('button', { name: '로그인' })).toBeDisabled();
   });
 
-  it('아이디가 3자 미만이면 버튼이 비활성화 상태를 유지한다 | button stays disabled when id is less than 3 chars', async () => {
+  it('아이디 3자 미만이면 버튼이 비활성화 상태를 유지한다 | button stays disabled when id < 3 chars', async () => {
     const user = userEvent.setup();
     render(<SignInForm />);
-
     await user.type(screen.getByLabelText('아이디'), 'ab');
     await user.type(screen.getByLabelText('비밀번호'), 'password123');
-
     await waitFor(() => {
       expect(screen.getByRole('button', { name: '로그인' })).toBeDisabled();
     });
   });
 
-  it('비밀번호가 3자 이하이면 버튼이 비활성화 상태를 유지한다 | button stays disabled when password is 3 chars or less', async () => {
+  it('비밀번호 3자 이하이면 버튼이 비활성화 상태를 유지한다 | button stays disabled when password <= 3 chars', async () => {
     const user = userEvent.setup();
     render(<SignInForm />);
-
     await user.type(screen.getByLabelText('아이디'), 'admin');
     await user.type(screen.getByLabelText('비밀번호'), 'pwd');
-
     await waitFor(() => {
       expect(screen.getByRole('button', { name: '로그인' })).toBeDisabled();
     });
   });
 
-  it('아이디 3자 이상, 비밀번호 4자 이상 입력 시 버튼이 활성화된다 | button enabled when id >= 3 and password > 3 chars', async () => {
+  it('아이디 3자+, 비밀번호 4자+ 입력 시 버튼이 활성화된다 | button enabled when id >= 3 and password > 3', async () => {
     const user = userEvent.setup();
     render(<SignInForm />);
-
     await user.type(screen.getByLabelText('아이디'), 'admin');
     await user.type(screen.getByLabelText('비밀번호'), 'password');
-
     await waitFor(() => {
       expect(screen.getByRole('button', { name: '로그인' })).not.toBeDisabled();
     });
@@ -134,30 +107,23 @@ describe('SignInForm 컴포넌트', () => {
     const passwordInput = screen.getByLabelText('비밀번호');
     expect(passwordInput).toHaveAttribute('type', 'password');
 
-    // 비밀번호 래퍼 안의 svg(아이콘) 클릭
     const passwordWrapper = passwordInput.closest('div');
     const toggleButton = passwordWrapper?.querySelector('svg');
     expect(toggleButton).not.toBeNull();
-    if (toggleButton) {
-      await user.click(toggleButton);
-    }
+    if (toggleButton) await user.click(toggleButton);
 
-    // type이 text로 바뀌었는지 확인
     await waitFor(() => {
       expect(screen.getByLabelText('비밀번호')).toHaveAttribute('type', 'text');
     });
   });
 
-  it('로그인 버튼 클릭 시 useLogin mutate가 호출된다 | useLogin mutate is called on button click', async () => {
+  it('로그인 버튼 클릭 시 useLogin mutate가 올바른 payload로 호출된다 | useLogin mutate called with correct payload', async () => {
     const user = userEvent.setup();
     render(<SignInForm />);
 
     await user.type(screen.getByLabelText('아이디'), 'admin123');
     await user.type(screen.getByLabelText('비밀번호'), 'password123');
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: '로그인' })).not.toBeDisabled();
-    });
+    await waitFor(() => expect(screen.getByRole('button', { name: '로그인' })).not.toBeDisabled());
 
     await user.click(screen.getByRole('button', { name: '로그인' }));
 
@@ -167,13 +133,45 @@ describe('SignInForm 컴포넌트', () => {
     });
   });
 
-  it('이미 토큰이 있으면 홈으로 리다이렉트 된다 | redirects to home if token already exists', async () => {
-    (Cookies.get as jest.Mock).mockReturnValue('existing-token');
+  it('로그인 성공 시 Zustand 스토어에 user 정보가 저장되고 홈으로 이동한다 | on success: store user info and redirect home', async () => {
+    // 성공 콜백이 즉시 실행되도록 mock 구성
+    jest.requireMock('@/api/adminUser').useLogin.mockImplementation((options: any) => {
+      options.onSuccess({
+        success: true,
+        statusMessage: '로그인 성공',
+        statusNumber: 200,
+        data: null,
+        user: { name: '홍길동', id: 'hong', role: 'MANAGER', storeId: 1 },
+      });
+      return { mutate: jest.fn() };
+    });
 
     render(<SignInForm />);
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith('/');
+      // user info가 토큰 없이 Zustand에 저장됨 (httpOnly 쿠키 방식)
+      expect(mockSetLogInUser).toHaveBeenCalledWith({
+        name: '홍길동',
+        id: 'hong',
+        role: 'MANAGER',
+      });
+      expect(toast.success).toHaveBeenCalledWith('로그인 성공');
+      expect(mockPush).toHaveBeenCalledWith('/');
+    });
+  });
+
+  it('로그인 실패 시 에러 토스트가 표시된다 | error toast shown on login failure', async () => {
+    jest.requireMock('@/api/adminUser').useLogin.mockImplementation((options: any) => {
+      options.onError({
+        response: { data: { statusMessage: '비밀번호가 일치하지 않습니다.' } },
+      });
+      return { mutate: jest.fn() };
+    });
+
+    render(<SignInForm />);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('비밀번호가 일치하지 않습니다.');
     });
   });
 });

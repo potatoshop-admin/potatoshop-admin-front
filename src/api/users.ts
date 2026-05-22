@@ -10,6 +10,7 @@ export const useGetAllUsers = () => {
       const { data } = await apiInstance.get('/users');
       return data;
     },
+    staleTime: 1000 * 60 * 3, // 3분
   });
 };
 

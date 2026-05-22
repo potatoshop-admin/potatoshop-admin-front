@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDeleteOrder, useGetOrder } from '@/api/orders';
 import { toast } from 'sonner';
@@ -38,21 +38,22 @@ const OrderDetail = ({ id }: { id: string }) => {
     createdAt: '',
   };
 
-  const deleteOrder = () => {
+  const deleteOrder = useCallback(() => {
     mutate({ id: Number(id) });
-  };
+  }, [mutate, id]);
 
-  const calculate = () => {
-    let sum = 0;
-    for (let i = 0; i < data?.data.orderItems.length; i++) {
-      sum += data?.data.orderItems[i].profitAmount;
-    }
-    return sum;
-  };
+  const calculate = useCallback(() => {
+    if (!data?.data?.orderItems) return 0;
+    return data.data.orderItems.reduce(
+      (sum: number, item: OrderItem) => sum + item.profitAmount,
+      0
+    );
+  }, [data?.data?.orderItems]);
 
-  const editBtn = () => {
+  const editBtn = useCallback(() => {
     router.push(`/orders/${id}/edit`);
-  };
+  }, [router, id]);
+
   React.useEffect(() => {
     if (data?.data) {
       toast.success(`${data.statusMessage}`);
@@ -67,6 +68,7 @@ const OrderDetail = ({ id }: { id: string }) => {
   if (!isSuccess) {
     return <Loading />;
   }
+
   return (
     <div className="h-full w-full px-4 py-4 overflow-y-scroll">
       <DeleteDialog title={data?.data.name} item="주문" onClick={deleteOrder} />

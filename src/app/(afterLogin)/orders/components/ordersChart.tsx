@@ -54,7 +54,6 @@ const OrdersChart = ({ orderStatus, title }: OrderChartProps) => {
     size: pagination.pageSize,
     sort: sortParam?.id ?? 'createdAt',
     direction: sortParam?.desc ? 'desc' : 'asc',
-    // 컬럼 필터에서 orderStatus 필터 추출 (서버에 전달)
     ...(columnFilters.find((f) => f.id === 'orderStatus')
       ? { orderStatus: columnFilters.find((f) => f.id === 'orderStatus')!.value as OrderStatus }
       : {}),
@@ -125,7 +124,6 @@ const OrdersChart = ({ orderStatus, title }: OrderChartProps) => {
   const table: ReactTable<CustomOrder> = useReactTable({
     data: processedData,
     columns,
-    // 서버에서 정렬/필터/페이지네이션을 처리하므로 manual 모드 활성화
     manualPagination: true,
     manualSorting: true,
     manualFiltering: true,
