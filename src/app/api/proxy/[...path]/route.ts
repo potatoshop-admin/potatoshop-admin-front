@@ -14,10 +14,7 @@ import { cookies } from 'next/headers';
 // BACKEND_URL은 Spring context-path까지 포함 (SERVER_PATH=/fashion-admin/api)
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080/fashion-admin/api';
 
-async function handler(
-  request: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> }
-) {
+async function handler(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
 
   const cookieStore = await cookies();
@@ -61,6 +58,7 @@ async function handler(
     const backendRes = await fetch(targetUrl, fetchOptions);
 
     // 응답 Content-Type에 따라 처리
+
     const resContentType = backendRes.headers.get('content-type') ?? '';
 
     if (resContentType.includes('application/json')) {
