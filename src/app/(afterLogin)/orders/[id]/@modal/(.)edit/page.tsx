@@ -37,7 +37,7 @@ export default function UserEditModal() {
     const changedValue: Partial<User> = getChangedFields(order, newData);
 
     mutate({ id: order.ordersId, order: changedValue });
-    router.back();
+    // router.back()은 onOpenChange → handleClose에서 호출되므로 중복 호출 제거
   };
   const [orderStatus, setOrderStatus] = React.useState<string>(order.orderStatus);
   const address = useInput(order.address);
@@ -59,11 +59,11 @@ export default function UserEditModal() {
             placeholder="주소를 입력하세요"
           />
           <RowSelect
-            label="카테고리"
+            label="주문 상태"
             options={orderStatusSelect}
             value={orderStatus}
             onChange={setOrderStatus}
-            placeholder="상품 카테고리를 선택하세요"
+            placeholder="주문 상태를 선택하세요"
             disabled={order.orderStatus === 'DELIVERED'}
           />
 

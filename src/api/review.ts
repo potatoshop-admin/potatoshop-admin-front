@@ -10,6 +10,7 @@ export const useGetAllReview = () => {
       const { data } = await apiInstance.get('/review');
       return data;
     },
+    staleTime: 1000 * 60 * 2, // 2분 (리뷰는 새로 올라올 수 있음)
   });
 };
 
@@ -22,6 +23,7 @@ export const useGetReview = (param: { id: number }) => {
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5분 (상세는 자주 안 바뀜)
   });
 };
 

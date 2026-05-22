@@ -11,32 +11,38 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { CircleUserRound } from 'lucide-react';
-import React from 'react';
-import Cookies from 'js-cookie';
+import React, { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLogInUser } from '@/stores/useLogInUser';
+import { useLogout } from '@/api/adminUser';
 import { Button } from '@/components/ui/button';
 
 const ProfileDropdown = () => {
   const router = useRouter();
-
   const { logInUser, deleteLogInUser } = useLogInUser();
 
-  const name = logInUser.name;
-  const id = logInUser.id;
-  const role = logInUser.role;
+  const { name, id, role } = logInUser;
 
-  const logOutButton = () => {
-    Cookies.remove('token');
-    const token = Cookies.get('token');
-    if (!token) {
+  const { mutate: logout } = useLogout({
+    onSuccess: () => {
+      // Zustand 스토어 초기화 후 로그인 페이지로
       deleteLogInUser();
       router.push('/sign-in');
-    }
-  };
-  const settingButton = () => {
+    },
+  });
+
+  /**
+   * 로그아웃 처리
+   * - httpOnly 쿠키는 클라이언트에서 직접 삭제 불가
+   * - /api/auth/logout 호출로 서버에서 쿠키 삭제
+   */
+  const logOutButton = useCallback(() => {
+    logout();
+  }, [logout]);
+
+  const settingButton = useCallback(() => {
     router.push('/settings');
-  };
+  }, [router]);
 
   return (
     <div className="size-14 rounded-[28px] bg-primary-50 flex items-center justify-center">

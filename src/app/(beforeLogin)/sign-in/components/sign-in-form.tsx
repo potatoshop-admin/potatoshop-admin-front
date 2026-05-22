@@ -6,38 +6,39 @@ import { useInput } from '@/hooks/use-input';
 import { EyeClosedIcon, EyeIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useLogin } from '@/api/adminUser';
+import { useLogin, LoginResponse } from '@/api/adminUser';
 import { toast } from 'sonner';
-import { ApiResponseType } from '@/types/api';
 import { useLogInUser } from '@/stores/useLogInUser';
-import { jwtDecode } from 'jwt-decode';
-import Cookies from 'js-cookie';
-import { RoleType } from '@/types/adminUser';
 
+/**
+ * SignInForm
+ *
+ * [보안 변경]
+ * - 이전: 로그인 후 JWT를 js-cookie로 직접 저장, jwtDecode로 클라이언트에서 디코딩
+ * - 현재: Next.js /api/auth/login이 httpOnly 쿠키를 서버에서 설정
+ *         이 컴포넌트는 응답 바디의 user 정보만 Zustand에 저장
+ *         JS에서 JWT 토큰 자체에 접근 불가 → XSS 방어
+ *
+ * 리다이렉트(토큰 없는 사용자 → /sign-in)는 middleware.ts에서 처리
+ */
 const SignInForm = () => {
   const router = useRouter();
   const id = useInput('');
   const password = useInput('');
 
-  const { setLogInUser, logInUser, deleteLogInUser } = useLogInUser();
+  const { setLogInUser } = useLogInUser();
 
   const { mutate } = useLogin({
-    onSuccess: (
-      data: ApiResponseType<null> & {
-        token: string;
-      }
-    ) => {
+    onSuccess: (data: LoginResponse) => {
+      // 토큰은 서버가 httpOnly 쿠키로 처리
+      // 클라이언트는 user info만 받아 Zustand 스토어에 저장
+      setLogInUser({
+        name: data.user.name,
+        id: data.user.id,
+        role: data.user.role,
+      });
+      toast.success(data.statusMessage);
       router.push('/');
-      const decodedToken: {
-        exp: number;
-        iat: number;
-        name: string;
-        role: RoleType;
-        storeId: number;
-        sub: string;
-      } = jwtDecode(data?.token);
-      setLogInUser({ name: decodedToken.name, id: decodedToken.sub, role: decodedToken.role });
-      toast.success(`${data.statusMessage}`);
     },
     onError: (e) => {
       toast.error(`${e.response.data.statusMessage}`);
@@ -46,14 +47,12 @@ const SignInForm = () => {
 
   const [showPassword, setShowPassword] = React.useState(false);
 
-  // useEffect+setState 이중 렌더 제거: 동기 계산으로 렌더당 1회만 평가
+  // useEffect + setState 이중 렌더 제거: 동기 계산으로 렌더당 1회만 평가
   const disabled = useMemo(
     () =>
       !(
-        typeof id.value !== 'number' &&
         typeof id.value === 'string' &&
         id.value.length >= 3 &&
-        typeof password.value !== 'number' &&
         typeof password.value === 'string' &&
         password.value.length > 3
       ),
@@ -64,16 +63,6 @@ const SignInForm = () => {
     mutate({ logInId: id.value as string, password: password.value as string });
   }, [mutate, id.value, password.value]);
 
-  React.useEffect(() => {
-    const token: string | undefined = Cookies.get('token');
-    if (token) {
-      router.replace('/');
-    } else {
-      if (logInUser.name !== '' || logInUser.id !== '') {
-        deleteLogInUser();
-      }
-    }
-  }, []);
   return (
     <form
       className="w-74 h-fit max-h-200 space-y-4"

@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import Cookies from 'js-cookie';
 import apiInstance from '@/api/apiInstance';
 import { ApiResponseType } from '@/types/api';
 import { Images, Item, Season } from '@/types/item';
@@ -8,11 +7,10 @@ export const useGetAllItems = (params?: { season?: Season }) => {
   return useQuery({
     queryKey: ['items', params?.season],
     queryFn: async () => {
-      const { data } = await apiInstance.get('/items', {
-        params,
-      });
+      const { data } = await apiInstance.get('/items', { params });
       return data;
     },
+    staleTime: 1000 * 60 * 3, // 3분
   });
 };
 
@@ -25,6 +23,7 @@ export const useGetItem = (param: { id: number }) => {
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5분
   });
 };
 
@@ -50,9 +49,6 @@ export const usePostItems = (options: { onSuccess: (e: ApiResponseType<Item>) =>
       queryClient.invalidateQueries({ queryKey: ['item'] });
       options?.onSuccess?.(data);
     },
-    onError: (error) => {
-      console.log(error);
-    },
   });
 };
 
@@ -72,9 +68,6 @@ export const usePatchItems = (options: { onSuccess: (e: ApiResponseType<Item>) =
       queryClient.invalidateQueries({ queryKey: ['items'] });
       options?.onSuccess?.(data);
     },
-    onError: (error) => {
-      console.log(error);
-    },
   });
 };
 
@@ -90,29 +83,22 @@ export const useDeleteItem = (options: { onSuccess: (e: ApiResponseType<Item>) =
       queryClient.invalidateQueries({ queryKey: ['items'] });
       options?.onSuccess?.(data);
     },
-    onError: (error) => {
-      console.log(error);
-    },
   });
 };
+
 export const usePostItemImages = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: { id: number; file: File[] }) => {
       const formData = new FormData();
-
       for (const f of payload.file) {
         formData.append('file', f);
       }
+      // Authorization은 프록시 서버가 httpOnly 쿠키에서 자동 주입
+      // Content-Type은 axios가 FormData 감지 시 boundary 포함하여 자동 설정
       const { data } = await apiInstance.post<ApiResponseType<Images[]>>(
         `/itemsImage/${payload.id}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `${Cookies.get('token')}`,
-          },
-        }
+        formData
       );
 
       if (data.data && data.data.length > 0) {
@@ -122,28 +108,22 @@ export const usePostItemImages = () => {
       }
       return data;
     },
-    onSuccess: (response) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['items'] });
-    },
-    onError: (error) => {
-      console.log(error);
     },
   });
 };
+
 const uploadToS3 = async (presignedUrl: string, file: File) => {
   const res = await fetch(presignedUrl, {
     method: 'PUT',
-    headers: {
-      'Content-Type': file.type, // 이거 안 넣으면 업로드 안 됨!
-    },
+    headers: { 'Content-Type': file.type },
     body: file,
   });
 
   if (!res.ok) {
     throw new Error(`S3 업로드 실패: ${res.statusText}`);
   }
-
-  console.log('✅ 업로드 성공');
 };
 
 export const useDeleteItemImages = (options: { onSuccess: () => void }) => {
@@ -152,13 +132,10 @@ export const useDeleteItemImages = (options: { onSuccess: () => void }) => {
   return useMutation({
     mutationFn: async (payload: { id: number; file: string[] }) => {
       const formattedData = payload.file.map((url) => ({ url }));
-
+      // Authorization은 프록시 서버가 httpOnly 쿠키에서 자동 주입
       const { data } = await apiInstance.delete<ApiResponseType<Images[]>>(
         `/itemsImage/${payload.id}`,
-        {
-          data: formattedData, // ✅ body로 들어감
-          headers: { Authorization: `${Cookies.get('token')}` },
-        }
+        { data: formattedData }
       );
       return data;
     },
@@ -166,9 +143,6 @@ export const useDeleteItemImages = (options: { onSuccess: () => void }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['items'] });
       options?.onSuccess?.();
-    },
-    onError: (error) => {
-      console.log(error);
     },
   });
 };
