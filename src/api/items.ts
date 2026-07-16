@@ -159,7 +159,12 @@ export const usePostItemImages = () => {
 
       return {
         ...data,
-        compressionStats: { count: compressionResults.length, totalBeforeKB, totalAfterKB, avgReductionPct },
+        compressionStats: {
+          count: compressionResults.length,
+          totalBeforeKB,
+          totalAfterKB,
+          avgReductionPct,
+        },
       };
     },
     onSuccess: () => {
