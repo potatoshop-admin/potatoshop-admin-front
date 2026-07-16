@@ -10,6 +10,7 @@ import {
   useGetItem,
   usePatchItems,
   usePostItemImages,
+  PostImagesResult,
 } from '@/api/items';
 import {
   RowDisplay,
@@ -38,10 +39,19 @@ const ItemEdit = ({ id }: { id: string }) => {
     onSuccess: () => {
       const uploadFiles = images.map((img) => img.file).filter((f): f is File => f instanceof File);
       if (uploadFiles.length > 0) {
-        imageUpload({
-          id: Number(id),
-          file: uploadFiles,
-        });
+        imageUpload(
+          { id: Number(id), file: uploadFiles },
+          {
+            onSuccess: (result: PostImagesResult) => {
+              const s = result.compressionStats;
+              const beforeMB = (s.totalBeforeKB / 1024).toFixed(1);
+              const afterMB = (s.totalAfterKB / 1024).toFixed(1);
+              toast.success(
+                `이미지 ${s.count}장 업로드 완료 · ${beforeMB}MB → ${afterMB}MB (평균 ${s.avgReductionPct}% 압축)`
+              );
+            },
+          }
+        );
       }
     },
   });

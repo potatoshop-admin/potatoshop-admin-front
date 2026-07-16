@@ -1,7 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import imageCompression from 'browser-image-compression';
 import apiInstance from '@/api/apiInstance';
 import { ApiResponseType } from '@/types/api';
 import { Images, Item, Season } from '@/types/item';
+
+/** 압축 전후 통계 */
+export interface CompressionStats {
+  count: number;
+  totalBeforeKB: number;
+  totalAfterKB: number;
+  avgReductionPct: number;
+}
+
+export interface PostImagesResult extends ApiResponseType<Images[]> {
+  compressionStats: CompressionStats;
+}
+
+const COMPRESSION_OPTIONS = {
+  maxSizeMB: 1,
+  maxWidthOrHeight: 1920,
+  useWebWorker: true,
+  fileType: 'image/jpeg' as const, // 압축 출력은 항상 JPEG
+  initialQuality: 0.85,
+};
 
 export const useGetAllItems = (params?: { season?: Season }) => {
   return useQuery({
@@ -89,24 +110,57 @@ export const useDeleteItem = (options: { onSuccess: (e: ApiResponseType<Item>) =
 export const usePostItemImages = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: { id: number; file: File[] }) => {
+    mutationFn: async (payload: { id: number; file: File[] }): Promise<PostImagesResult> => {
+      // 1️⃣ 파일별 압축 + 전후 사이즈 기록
+      const compressionResults = await Promise.all(
+        payload.file.map(async (file) => {
+          const compressed = await imageCompression(file, COMPRESSION_OPTIONS);
+          return {
+            original: file,
+            compressed,
+            beforeKB: Math.round(file.size / 1024),
+            afterKB: Math.round(compressed.size / 1024),
+            reductionPct: Math.round((1 - compressed.size / file.size) * 100),
+          };
+        })
+      );
+
+      // 2️⃣ 압축본을 백엔드에 전송 → presigned URL 2개(압축/원본) 수신
       const formData = new FormData();
-      for (const f of payload.file) {
-        formData.append('file', f);
+      for (const result of compressionResults) {
+        // 원본 파일명 유지하여 백엔드 presigned URL 생성에 활용
+        formData.append('file', result.compressed, result.original.name);
       }
-      // Authorization은 프록시 서버가 httpOnly 쿠키에서 자동 주입
-      // Content-Type은 axios가 FormData 감지 시 boundary 포함하여 자동 설정
+
       const { data } = await apiInstance.post<ApiResponseType<Images[]>>(
         `/itemsImage/${payload.id}`,
         formData
       );
 
+      // 3️⃣ S3 직접 업로드: 압축본 → url, 원본 → originalUrl
       if (data.data && data.data.length > 0) {
-        data.data.forEach((image: Images, index: number) => {
-          uploadToS3(image.url, payload.file[index]);
-        });
+        await Promise.all(
+          data.data.map(async (image: Images, index: number) => {
+            const result = compressionResults[index];
+            await uploadToS3(image.url, result.compressed);
+            if (image.originalUrl) {
+              await uploadToS3(image.originalUrl, result.original);
+            }
+          })
+        );
       }
-      return data;
+
+      // 4️⃣ 압축 통계 계산
+      const totalBeforeKB = compressionResults.reduce((sum, r) => sum + r.beforeKB, 0);
+      const totalAfterKB = compressionResults.reduce((sum, r) => sum + r.afterKB, 0);
+      const avgReductionPct = Math.round(
+        compressionResults.reduce((sum, r) => sum + r.reductionPct, 0) / compressionResults.length
+      );
+
+      return {
+        ...data,
+        compressionStats: { count: compressionResults.length, totalBeforeKB, totalAfterKB, avgReductionPct },
+      };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['items'] });
