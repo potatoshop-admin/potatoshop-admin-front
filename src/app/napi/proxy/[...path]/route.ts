@@ -41,17 +41,18 @@ async function handler(request: NextRequest, { params }: { params: Promise<{ pat
 
   const isBodyMethod = !['GET', 'HEAD', 'OPTIONS'].includes(request.method);
 
-  const fetchOptions: RequestInit & { duplex?: string } = {
+  const fetchOptions: RequestInit = {
     method: request.method,
     headers: forwardHeaders,
   };
 
   // body 전달 (GET/HEAD/OPTIONS 제외)
-  // ReadableStream을 그대로 전달하여 multipart 포함 모든 형식 지원
-  if (isBodyMethod && request.body) {
-    fetchOptions.body = request.body;
-    // Node.js fetch에서 스트리밍 body 전달에 필요한 옵션
-    fetchOptions.duplex = 'half';
+  // arrayBuffer로 읽어서 전달 — 스트리밍 방식보다 안정적으로 multipart 전달 가능
+  if (isBodyMethod) {
+    const body = await request.arrayBuffer();
+    if (body.byteLength > 0) {
+      fetchOptions.body = body;
+    }
   }
 
   try {

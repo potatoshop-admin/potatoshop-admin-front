@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { toast } from 'sonner';
-import { usePostItemImages, usePostItems } from '@/api/items';
+import { usePostItemImages, usePostItems, PostImagesResult } from '@/api/items';
 import { useInput } from '@/hooks/use-input';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,11 +21,20 @@ const Create = () => {
     onSuccess: (e: ApiResponseType<Item>) => {
       const itemId = e.data?.itemId;
       if (images.length > 0) {
-        const files = images.map((img) => img.file).filter((f): f is File => f instanceof File); // ✅ File 객체만 필터링
-        imageUpload({
-          id: Number(itemId),
-          file: files,
-        });
+        const files = images.map((img) => img.file).filter((f): f is File => f instanceof File);
+        imageUpload(
+          { id: Number(itemId), file: files },
+          {
+            onSuccess: (result: PostImagesResult) => {
+              const s = result.compressionStats;
+              const beforeMB = (s.totalBeforeKB / 1024).toFixed(1);
+              const afterMB = (s.totalAfterKB / 1024).toFixed(1);
+              toast.success(
+                `이미지 ${s.count}장 업로드 완료 · ${beforeMB}MB → ${afterMB}MB (평균 ${s.avgReductionPct}% 압축)`
+              );
+            },
+          }
+        );
       }
       title.reset();
       description.reset();

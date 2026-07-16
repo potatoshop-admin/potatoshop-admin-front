@@ -2,6 +2,8 @@ export interface Images {
   itemImageId: number;
   sortOrder: number;
   url: string;
+  /** 원본 이미지 S3 URL (압축 전 백업) — 백엔드에서 이중 저장 시 제공 */
+  originalUrl?: string;
 }
 
 export type Category = 'outwear' | 'top' | 'skirt' | 'pants' | 'dress' | 'acc';
