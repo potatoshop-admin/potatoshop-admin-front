@@ -132,10 +132,15 @@ export const usePostItemImages = () => {
         formData.append('file', result.compressed, result.original.name);
       }
 
-      const { data } = await apiInstance.post<ApiResponseType<Images[]>>(
-        `/itemsImage/${payload.id}`,
-        formData
-      );
+      const proxyRes = await fetch(`/fashion-admin/napi/proxy/itemsImage/${payload.id}`, {
+        method: 'POST',
+        body: formData,
+        // Content-Type 미설정 → 브라우저가 boundary 포함하여 multipart/form-data 자동 지정
+      });
+      if (!proxyRes.ok) {
+        throw new Error(`이미지 업로드 실패: ${proxyRes.status}`);
+      }
+      const data: ApiResponseType<Images[]> = await proxyRes.json();
 
       // 3️⃣ S3 직접 업로드: 압축본 → url, 원본 → originalUrl
       if (data.data && data.data.length > 0) {
