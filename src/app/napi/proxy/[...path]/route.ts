@@ -46,12 +46,18 @@ async function handler(request: NextRequest, { params }: { params: Promise<{ pat
     headers: forwardHeaders,
   };
 
-  // body 전달 (GET/HEAD/OPTIONS 제외)
-  // arrayBuffer로 읽어서 전달 — 스트리밍 방식보다 안정적으로 multipart 전달 가능
   if (isBodyMethod) {
-    const body = await request.arrayBuffer();
-    if (body.byteLength > 0) {
-      fetchOptions.body = body;
+    if (contentType?.includes('multipart/form-data')) {
+      // multipart는 Next.js에서 파싱 후 FormData 재구성
+      // Content-Type을 직접 설정하지 않아야 fetch가 boundary 포함하여 자동 생성
+      const formData = await request.formData();
+      fetchOptions.body = formData;
+      forwardHeaders.delete('Content-Type');
+    } else {
+      const body = await request.arrayBuffer();
+      if (body.byteLength > 0) {
+        fetchOptions.body = body;
+      }
     }
   }
 
